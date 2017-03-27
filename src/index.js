@@ -10,15 +10,19 @@ class Localizify {
     return this._locale;
   }
 
+  isLocale(locale) {
+    return !!~this._localesList.indexOf(locale);
+  }
+
   setDefaultLocale(locale) {
-    if (!!~this._localesList.indexOf(locale)) {
+    if (this.isLocale(locale)) {
       this._defaultLocale = locale;
     }
     return this;
   }
 
   setLocale(locale) {
-    if (!!~this._localesList.indexOf(locale)) {
+    if (this.isLocale(locale)) {
       this._locale = locale;
       if (!this._defaultLocale) {
         this._defaultLocale = locale;
@@ -32,7 +36,6 @@ class Localizify {
     this._messages[locale] = messages;
     return this;
   }
-
 
   _replaceData(_msg, data) {
     let msg = _msg;
