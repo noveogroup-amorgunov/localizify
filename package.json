@@ -1,6 +1,6 @@
 {
   "name": "localizify",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Easy localize your messages",
   "main": "src/index.js",
   "scripts": {
