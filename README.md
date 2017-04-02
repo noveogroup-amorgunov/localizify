@@ -7,30 +7,32 @@
 
 <p align="center">
   <a href="https://travis-ci.org/noveogroup-amorgunov/localizify">
-    <img src="https://travis-ci.org/noveogroup-amorgunov/localizify.svg?branch=master"
+    <img src="https://img.shields.io/travis/noveogroup-amorgunov/localizify/master.svg?style=flat-square"
          alt="Travis Build Status" />
   </a>
   <a href="https://www.npmjs.com/package/localizify">
-    <img src="https://img.shields.io/npm/dm/localizify.svg"
+    <img src="https://img.shields.io/npm/dm/localizify.svg?style=flat-square"
          alt="Downloads per month" />
   </a>
   <a href="https://www.npmjs.com/package/localizify">
-    <img src="https://img.shields.io/npm/v/localizify.svg"
+    <img src="https://img.shields.io/npm/v/localizify.svg?style=flat-square"
          alt="Version" />
   </a>
   <a href="https://www.npmjs.com/package/localizify">
-    <img src="https://img.shields.io/npm/l/localizify.svg"
+    <img src="https://img.shields.io/npm/l/localizify.svg?style=flat-square"
          alt="License" />
   </a>
 </p>
 
-Very light library for translation and localization in `Node.js` and the browser.
+Very light library for translation and localization in `Node.js` and the browser (See examples to use *localizify* in [ReactJS](#usage-with-react), [express](#usage-with-express) or [hapijs](#usage-with-hapijs).
 
 **Features:**
 
 - Translation and localization
 - Interpolation of values to translations
 - Detect user language in browser and in server requests
+- Events when locale was changed and translation isn't found
+- Easy scope system (nested-object translations)
 
 ## Installation
 
@@ -40,9 +42,17 @@ You can install library from npm:
 npm install localizify --save
 ```
 
+or download file (full version or minify bundle) from `dist` folder and add the script to the page (only for browsers):
+
+```html
+<script src="/path/to/localizy.min.js"></script>
+```
+
 ## Usage
 
-[localizify](https://github.com/noveogroup-amorgunov/localizify) returns instance of Localizify, so it's singelton. You can add translations in one module and use it in other. 
+### Quick start
+
+[localizify](https://github.com/noveogroup-amorgunov/localizify) returns instance of Localizify, so it's singelton. You can add translations in one module and use it in another (but you can get Localizify from `localizify.Instance`.
 
 First of all you need add locales with translations and set locale by default:
 
@@ -73,7 +83,7 @@ localizify
 }
 ```
 
-You can't set unknown locale (without adding translations):
+You can't set unknown locale (without translations):
 
 ```javascript
 const localizify = require('localizify');
@@ -84,9 +94,10 @@ localizify.getLocale('en'); // en, because 'es' is unknown locale
   
 // to check that it's available locale
 localizify.isLocate('es'); // false
+localizify.isLocate('en'); // true
 ```
 
-Now for get translition you can use `localizify.translate(msg)` or `t(msg)` methods:
+Now for get translition by key you can use `localizify.translate(key)` or `localizify.t(key)` methods:
 
 ```javascript
 const { t } = require('localizify');
@@ -105,9 +116,105 @@ t('hello world'); // Bonjour tout le monde!
 t('how are you, {name}', { name: 'Sasha' }) // Сomment êtes-vous, Sasha?
 ```
 
-If locale don't contain translition, return translition with default locale (you can set it using `setDefaultLocale(locale)` method). If default locale don't contain translition too, return source message.
+If locale don't contain appropriate translition, return source interpolated key (key may be equal message) and emit event.
+
+### Addition features
+
+#### Translation as nested object
+
+Translation data is organized as a nested object using the top-level key as namespace (scope or context):
+
+```json
+{
+  "bot" : {
+    "startagain": "reset system",
+    "turn_off": "Bot was turned off by {name}.",
+    "turn_on": "Bot was turn on!",
+    "statuses": {
+      "active": "Active",
+      "remote": "Remote"
+    }
+  },
+  "web": {
+    "go_to_messenger": "Go to messenger",
+    "sign_up": "Registration"
+  }
+};
+
+```
+
+The key argument can be a dot-separated key. See examples below:
+
+```javascript
+t('bot.turn_off', { name: 'Alex' }); // Bot was turned off by Alex.
+t('bot.statuses.active'); // Active
+
+t('web.sign_up'); // Registration
+```
+
+The `scope` (namespace) option can be either a single key or a dot-separated key. You can combinate keys and scopes as you wish:
+
+```javascript
+t('turn_off', { name: 'Alex', scope: 'bot' }); // Bot was turned off by Alex.
+
+t('statuses.active', { scope: 'bot' }); // Active
+t('active', { scope: 'bot.statuses' }); // Active
+```
+#### Available events
+
+When translation is missing, *localizify* emit an event about it. You can listen it:
+
+```javascript
+localizify.onTranslationNotFound((locale, key, scope) => {});
+```
+
+The `setLocale` method emits an event you can listen to:
+
+```javascript
+localizify.onLocaleChange((locale, previous) => {});
+```
 
 
+#### Register default scope and interpolations
+
+You can set scope for your module by default:
+
+```javascript
+localizify.setDefaultScope('web');
+
+t('go_to_messenger'); // Go to messenger
+t('sign_up'); // Registration
+
+localizify.clearDefaultScope(); // clear default scope
+```
+You can add translations for certain scope:
+
+```javascript
+localizify.add('en', 'bot', { 'hello': "hello, bot" });
+```
+
+---
+
+You can register default interpolations using the `registerInterpolations` method. Interpolations you give as options to the translate method take precedence over registered interpolations.
+
+```javascript
+localizify.add('en', {
+  my_awesome_namespace: {
+    greeting: 'Hello {name} in {app_name}!'
+  }
+});
+
+localizify.registerInterpolations({ app_name: 'My Awesome App' });
+
+t('my_awesome_namespace.greeting', { name: 'Alex' }); // Hello Alex in My Awesome App!
+t('my_awesome_namespace.greeting', { name: 'Alex', app_name: 'The Bar App' }); // Hello Alex in The Bar App!
+```
+
+## API
+
+...
+
+## Examples
 
 ### Usage with express:
 [localizify](https://github.com/noveogroup-amorgunov/localizify) can work together with [express](http://expressjs.com/). First of all add middleware to switch locale on request:
