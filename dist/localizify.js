@@ -769,11 +769,6 @@ var Localizify = function (_EventEmitter) {
       this.emit('translation-not-found', locale, key, scope);
       return this._replaceData(key, data);
     }
-  }, {
-    key: 't',
-    value: function t() {
-      return this.translate.apply(this, arguments);
-    }
   }]);
 
   return Localizify;
@@ -781,6 +776,7 @@ var Localizify = function (_EventEmitter) {
 
 var localizify = new Localizify();
 localizify.Instance = Localizify;
+localizify.t = localizify.translate.bind(localizify);
 
 module.exports = localizify;
 
