@@ -1,6 +1,6 @@
 {
   "name": "localizify",
-  "version": "1.0.2",
+  "version": "1.1.0",
   "description": "Easy localize your messages",
   "main": "src/index.js",
   "scripts": {
@@ -26,8 +26,18 @@
   },
   "homepage": "https://github.com/noveogroup-amorgunov/localizify#readme",
   "devDependencies": {
+    "babelify": "^7.3.0",
     "chai": "^3.5.0",
+    "eslint": "^3.14.1",
+    "eslint-config-airbnb-base": "^11.0.1",
+    "eslint-plugin-import": "^2.2.0",
+    "grunt": "^1.0.1",
+    "grunt-browserify": "^5.0.0",
+    "grunt-contrib-uglify": "^2.2.0",
+    "grunt-release": "^0.14.0",
     "mocha": "^3.2.0"
   },
-  "dependencies": {}
+  "dependencies": {
+    "wolfy87-eventemitter": "^5.1.0"
+  }
 }

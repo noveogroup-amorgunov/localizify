@@ -1,48 +1,100 @@
-class Localizify {
+const EventEmitter = require('wolfy87-eventemitter');
+
+function isPlainObject(val) {
+  return val !== null && Object.prototype.toString.call(val) === '[object Object]';
+}
+
+function isString(val) {
+  return typeof val === 'string';
+}
+
+function extend(target, ...args) {
+  return Object.assign(target, ...args);
+}
+
+function normalize(object, acc = [], results = {}) {
+  if (isString(object)) {
+    results[acc.join('.')] = object;
+  } else if (isPlainObject(object)) {
+    Object.keys(object).forEach((key) => {
+      normalize(object[key], [...acc, key], results);
+    });
+  }
+  return results;
+}
+
+class Localizify extends EventEmitter {
   constructor() {
-    this._locale = null;
-    this._defaultLocale = null;
-    this._localesList = [];
-    this._messages = {};
+    super();
+    this._store = {
+      locale: null,
+      localesList: [],
+      scope: null,
+      translations: {},
+      interpolations: {},
+      normalizedKeys: {},
+      separator: '.',
+    };
+  }
+
+  /**
+   * @return {Object}
+   */
+  getStore() {
+    return this._store;
   }
 
   /**
    * @return {String}
    */
   getLocale() {
-    return this._locale;
-  }
-
-  /**
-   * @param {String}
-   * @param {Object} messages [description]
-   */
-  add(locale, messages = {}) {
-    this._localesList.push(locale);
-    this._messages[locale] = messages;
-    return this;
-  }
-
-  /**
-   * @param {String}
-   */
-  setDefaultLocale(locale) {
-    if (this.isLocale(locale)) {
-      this._defaultLocale = locale;
-    }
-    return this;
+    return this.getStore().locale;
   }
 
   /**
    * @param {String}
    */
   setLocale(locale) {
-    if (this.isLocale(locale)) {
-      this._locale = locale;
-      if (!this._defaultLocale) {
-        this._defaultLocale = locale;
-      }
+    const previous = this.getStore().locale;
+    if (this.isLocale(locale) && previous !== locale) {
+      this.getStore().locale = locale;
+      this.emit('change-locale', locale, previous);
     }
+    return this;
+  }
+
+  /**
+   * @param  {Function} callback
+   */
+  onLocaleChange(callback) {
+    this.addListener('change-locale', callback);
+  }
+
+  /**
+   * @param  {Function} callback
+   */
+  onTranslationNotFound(callback) {
+    this.addListener('translation-not-found', callback);
+  }
+
+  /**
+   * @param {String} scope
+   */
+  setDefaultScope(scope) {
+    this.getStore().scope = scope;
+    return this;
+  }
+
+  clearDefaultScope() {
+    this.getStore().scope = null;
+    return this;
+  }
+
+  /**
+   * @param  {String} translation
+   */
+  registerInterpolations(translation) {
+    extend(this.getStore().interpolations, translation);
     return this;
   }
 
@@ -52,7 +104,32 @@ class Localizify {
    * @return {Boolean}
    */
   isLocale(locale) {
-    return !!~this._localesList.indexOf(locale);
+    return !!~this.getStore().localesList.indexOf(locale);
+  }
+
+  /**
+   * [add description]
+   * @param {String}  locale
+   * @param {String|Object}  scopeOrTranslitions
+   * @param {String|false} _translations
+   */
+  add(locale, scopeOrTranslitions, _translations = false) {
+    const store = this.getStore();
+    let trans = scopeOrTranslitions;
+
+    if (_translations) {
+      trans = {};
+      trans[scopeOrTranslitions] = _translations;
+    }
+
+    if (!this.isLocale(locale)) {
+      store.localesList.push(locale);
+    }
+
+    store.translations[locale] = extend({}, store.translations[locale], trans);
+    store.normalizedKeys[locale] = extend({}, store.normalizedKeys[locale], normalize(trans));
+
+    return this;
   }
 
   /**
@@ -65,7 +142,8 @@ class Localizify {
 
   /**
    * Define user's language by browser or by request header language
-   * @return {String|false}
+   * @param  {String|false} _language
+   * @return {Mixed}
    */
   detectLocale(_language = false) {
     let language = _language;
@@ -92,9 +170,12 @@ class Localizify {
   _replaceData(_msg, data) {
     let msg = _msg;
     const foundTerms = msg.match(/\{(.*?)\}/gi) || [];
-    foundTerms.forEach((term) => {
-      if (data[term.replace(/[{}]/gi, '')]) {
-        msg = msg.replace(term, data[term.replace(/[{}]/gi, '')]);
+    foundTerms.forEach((_term) => {
+      const term = _term.replace(/[{}]/gi, '');
+      if (data[term]) {
+        msg = msg.replace(_term, data[term]);
+      } else if (this.getStore().interpolations[term]) {
+        msg = msg.replace(_term, this.getStore().interpolations[term]);
       }
     });
 
@@ -102,24 +183,39 @@ class Localizify {
   }
 
   /**
-   * @param  {String}
-   * @param  {Object|null}
+   * @param  {String} key
+   * @param  {Object} data
    * @return {String}
    */
-  translate(message, data = {}) {
-    const msgList = this._messages[this._locale];
-    const defaultMsgList = this._messages[this._defaultLocale];
-
-    if (msgList && msgList[message]) {
-      return this._replaceData(msgList[message], data);
-    } else if (defaultMsgList && defaultMsgList[message]) {
-      return this._replaceData(defaultMsgList[message], data);
+  translate(key, data = {}) {
+    if (!key) {
+      throw new Error('Key param is required');
     }
-    return this._replaceData(message, data);
+
+    const scope = data.scope || this.getStore().scope;
+    const locale = (this.isLocale(data.locale) && data.locale) || this.getStore().locale;
+
+    if (!locale) {
+      throw new Error('Current locale is not defined');
+    }
+
+    const keys = this.getStore().normalizedKeys[locale];
+    const normalizeKey = (scope ? `${scope}.` : '') + key;
+
+    if (keys[normalizeKey]) {
+      return this._replaceData(keys[normalizeKey], data);
+    }
+    this.emit('translation-not-found', locale, key, scope);
+    return this._replaceData(key, data);
+  }
+
+  t(...args) {
+    return this.translate(...args);
   }
 
 }
 
 const localizify = new Localizify();
+localizify.Instance = Localizify;
+
 module.exports = localizify;
-module.exports.t = localizify.translate.bind(localizify);
