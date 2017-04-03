@@ -157,6 +157,10 @@ class Localizify extends EventEmitter {
         navigator.userLanguage;
     }
 
+    if (!language) {
+      return false;
+    }
+
     // Split locales with a region code
     const languageWithoutRegionCode = language.toLowerCase().split(/[_-]+/)[0];
     return this.isLocale(languageWithoutRegionCode) ? languageWithoutRegionCode : false;
