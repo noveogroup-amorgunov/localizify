@@ -208,14 +208,10 @@ class Localizify extends EventEmitter {
     this.emit('translation-not-found', locale, key, scope);
     return this._replaceData(key, data);
   }
-
-  t(...args) {
-    return this.translate(...args);
-  }
-
 }
 
 const localizify = new Localizify();
 localizify.Instance = Localizify;
+localizify.t = localizify.translate.bind(localizify);
 
 module.exports = localizify;
