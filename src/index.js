@@ -27,7 +27,7 @@ class Localizify extends EventEmitter {
   constructor() {
     super();
     this._store = {
-      locale: null,
+      locale: 'en',
       localesList: [],
       scope: null,
       translations: {},
@@ -137,7 +137,7 @@ class Localizify extends EventEmitter {
    * @return {Boolean}
    */
   _isBrowser() {
-    return !(typeof module !== 'undefined' && module.exports);
+    return !(typeof module !== 'undefined' && module.exports) || typeof navigator !== 'undefined';
   }
 
   /**

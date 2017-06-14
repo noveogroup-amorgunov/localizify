@@ -540,7 +540,7 @@ var Localizify = function (_EventEmitter) {
     var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(Localizify).call(this));
 
     _this._store = {
-      locale: null,
+      locale: 'en',
       localesList: [],
       scope: null,
       translations: {},
@@ -685,7 +685,7 @@ var Localizify = function (_EventEmitter) {
   }, {
     key: '_isBrowser',
     value: function _isBrowser() {
-      return !(typeof module !== 'undefined' && module.exports);
+      return !(typeof module !== 'undefined' && module.exports) || typeof navigator !== 'undefined';
     }
 
     /**
@@ -706,6 +706,10 @@ var Localizify = function (_EventEmitter) {
         // on different fields on the `navigator` object, so we make sure to account
         // for these different by checking all of them
         language = navigator.languages && navigator.languages[0] || navigator.language || navigator.userLanguage;
+      }
+
+      if (!language) {
+        return false;
       }
 
       // Split locales with a region code
