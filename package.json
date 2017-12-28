@@ -1,6 +1,6 @@
 {
   "name": "localizify",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "Localize your messages easily",
   "main": "dist/localizify.min.js",
   "scripts": {
@@ -37,7 +37,5 @@
     "mocha": "^3.2.0",
     "webpack": "^3.10.0"
   },
-  "dependencies": {
-    "node-static": "^0.7.10"
-  }
+  "dependencies": {}
 }
