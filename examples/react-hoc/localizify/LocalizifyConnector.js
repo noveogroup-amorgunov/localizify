@@ -8,12 +8,12 @@ export default (ComposedComponent) => {
 
         if (typeof t !== 'function') {
             console.warn(`Attempted to connect ${ComposedComponent.displayName} to localizify, but no valid
-          localize method was found on context. Did you render this in a <LocalizifyProvider/> conext?`);
+          instance was found on context. Did you render this in a <LocalizifyProvider/> context?`);
         }
         return (<ComposedComponent {...props} t={t} localizer={localizer} />);
     };
 
-    LocalizeConnected.displayName = `Localizify(${ComposedComponent.name})`;
+    LocalizeConnected.displayName = `LocalizeConnected(${ComposedComponent.name})`;
     LocalizeConnected.contextTypes = {
         t: PropTypes.func,
         localizer: PropTypes.object,

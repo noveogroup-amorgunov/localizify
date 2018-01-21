@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import localizify from 'localizify';
 
 export default (ComposedComponent, localizer = localizify) => {
-    class LocalizationWrapper extends Component {
+    class LocalizifyProvider extends Component {
         constructor() {
             super();
 
@@ -32,11 +32,11 @@ export default (ComposedComponent, localizer = localizify) => {
         }
     }
 
-    LocalizationWrapper.displayName = `Wrapped${ComposedComponent.displayName || ComposedComponent.name || 'Component'}`;
-    LocalizationWrapper.childContextTypes = {
+    LocalizifyProvider.displayName = `LocalizifyProvider${ComposedComponent.displayName || ComposedComponent.name || 'Component'}`;
+    LocalizifyProvider.childContextTypes = {
         t: PropTypes.func,
         localizer: PropTypes.object,
     };
 
-    return LocalizationWrapper;
+    return LocalizifyProvider;
 };
