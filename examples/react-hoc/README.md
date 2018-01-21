@@ -1,8 +1,8 @@
 # Localizify React HOC Example
 
-![](examples/react-hoc/demo.gif)
+![](demo.gif)
 
-To work with React you need create two localizify helpers: [`LocalizifyConnector`](examples/react-hoc/localizify/LocalizifyConnector) and [`LocalizifyProvider`](examples/react-hoc/localizify/LocalizifyProvider). This files is not included to main library, so you can customize it as you want.
+To work with React you need create two localizify helpers: [`LocalizifyConnector`](localizify/LocalizifyConnector) and [`LocalizifyProvider`](localizify/LocalizifyProvider). This files is not included to main library, so you can customize it as you want.
 
 `LocalizifyProvider` exposes a translate(key, data) function and instance of Localizify that is passed through [react context](https://facebook.github.io/react/docs/context.html) to all children in the render tree it wraps. It's an HOC wrapper to quickly provide `childContextTypes` for a given component. You can just wrap your AppComponent:
 
