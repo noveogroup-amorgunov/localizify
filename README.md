@@ -3,7 +3,7 @@
   <br>
 </h1>
 
-<h4 align="center">Easy localization for your messages</h4>
+<h4 align="center">Localize your messages easily</h4>
 
 <p align="center">
   <a href="https://travis-ci.org/noveogroup-amorgunov/localizify">
@@ -33,6 +33,7 @@ Very light library for translation and localization in `Node.js` and the browser
 
 **Features:**
 
+- No dependencies (only 2KB gziped)
 - Translation and localization
 - Interpolation of values to translations
 - Detect user language in browser and in server requests
@@ -45,6 +46,8 @@ You can install library from npm:
 
 ```shell
 npm install localizify --save
+# or using yarn
+yarn add localizify
 ```
 
 or download file (full version or minify bundle) from `dist` folder and add the script to the page (only for browsers):
@@ -57,7 +60,7 @@ or download file (full version or minify bundle) from `dist` folder and add the 
 
 ### Quick start
 
-[localizify](https://github.com/noveogroup-amorgunov/localizify) returns instance of Localizify, so it's singelton. You can add translations in one module and use it in another (but you can get Localizify from `localizify.Instance`.
+[localizify](https://github.com/noveogroup-amorgunov/localizify) returns instance of Localizify, so it's singelton. You can add translations in one module and use it in another (but you can get Localizify from `localizify.Instance`).
 
 First of all you need add locales with translations and set locale by default:
 
@@ -217,7 +220,49 @@ t('my_awesome_namespace.greeting', { name: 'Alex', app_name: 'The Bar App' }); /
 
 ## API
 
-...
+#### `new localizify.Instance() => localizify`
+
+But default returns instance of Localizify, so it's singelton. You can add translations in one module and use it in another. But you can create another Localizify instance.
+
+#### `localizify.getLocale()`
+
+Get selected locale.
+
+#### `localizify.setLocale(string locale) => this`
+
+Change or set locale. If locales list includes passed locale and it's not set now, set locale or emit event `CHANGE_LOCALE`. Return `this` for chaining.
+
+#### `localizify.isLocale(string locale) => boolean`
+
+Check that locale is registered
+
+#### `localizify.onLocaleChange(function callback) => function`
+
+Add handler which will be exucated when locale change.
+
+#### `localizify.onTranslationNotFound(function callback) => function`
+
+Add handler which will be exucated when translation is not found.
+
+#### `localizify.setDefaultScope(string scope) => this`
+
+#### `localizify.clearDefaultScope() => this`
+
+#### `localizify.registerInterpolations(object data) => this`
+
+Register default interpolations. Interpolations you give as options to the translate method take precedence over registered interpolations.
+
+#### `localizify.add(string locale, scopeOrTranslitions, ?string _translations) => this`
+
+Register new locale. If scope is provided, translations will be third argument, otherwise - second.
+
+#### `localizify.detectLocale(?string language) => string|false`
+
+Define user's language by browser or by request header language. `language` params should be passed from server headers (`request.headers['accept-language']`). In client-size this param is optional (usually not using at all).
+
+#### `localizify.translate(string key, ?object data) => string`
+
+Translate by key! If translation not found, return passed string with replacing data to string and emit `TRANSLATION_NOT_FOUND` event.
 
 ## Examples
 

@@ -9,7 +9,8 @@ module.exports = {
   output: {
     path: path.resolve(__dirname, './dist'),
     filename: '[name].js',
-    library: 'localizify'
+    library: 'localizify',
+    libraryTarget: 'umd'
   },
   module: {
     rules: [

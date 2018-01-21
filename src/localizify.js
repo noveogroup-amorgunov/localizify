@@ -98,7 +98,7 @@ class Localizify extends EventEmitter {
   }
 
   /**
-   * @param {String} translation
+   * @param {Object} translation
    * @return {Localizify}
    */
   registerInterpolations(translation) {
