@@ -1,0 +1,52 @@
+{
+  "name": "localizify-react-hoc",
+  "version": "1.0.0",
+  "description": "Localizify React HOC Example",
+  "main": "index.js",
+  "scripts": {
+    "start": "cross-env NODE_ENV=development parcel index.html ",
+    "build": "cross-env NODE_ENV=production parcel build index.html --no-minify --public-url /"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/noveogroup-amorgunov/localizify.git"
+  },
+  "keywords": [
+    "javascript",
+    "internationalization",
+    "localization",
+    "translation",
+    "library",
+    "react",
+    "react-hoc",
+    "i18n"
+  ],
+  "author": "Alexander Morgunov <fxl@list.ru> (https://github.com/noveogroup-amorgunov)",
+  "license": "MIT",
+  "dependencies": {
+    "localizify": "^1.2.2",
+    "prop-types": "^15.6.0",
+    "react": "^16.2.0",
+    "react-dom": "^16.2.0"
+  },
+  "devDependencies": {
+    "parcel-bundler": "^1.4.1",
+    "autoprefixer": "^7.2.1",
+    "babel-preset-react-app": "^3.1.0",
+    "cross-env": "^5.1.1"
+  },
+  "postcss": {
+    "modules": false,
+    "plugins": {
+      "autoprefixer": {
+        "browsers": [
+          ">1%",
+          "last 4 versions",
+          "Firefox ESR",
+          "not ie < 9"
+        ],
+        "flexbox": "no-2009"
+      }
+    }
+  }
+}

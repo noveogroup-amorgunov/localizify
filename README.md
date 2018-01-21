@@ -29,16 +29,26 @@
   
 </p>
 
-Very light library for translation and localization in `Node.js` and the browser (See examples to use *localizify* in [ReactJS](#usage-with-react), [express](#usage-with-express) or [hapijs](#usage-with-hapijs).
+Very light library for translation and localization in `Node.js` and the browser :cn: :us: :fr: :es:	:it: :ru: :uk: :de: :performing_arts:
 
-**Features:**
 
-- No dependencies (only 2KB gziped)
-- Translation and localization
-- Interpolation of values to translations
-- Detect user language in browser and in server requests
-- Events when locale was changed and translation isn't found
-- Easy scope system (nested-object translations)
+#### Features
+
+- :rocket: No dependencies (only 2KB gziped)
+- :dancers: Translation and localization
+- :gift: Interpolation of values to translations
+- :penguin: Detect user language in browser and in server requests
+- :mega: Events when locale was changed and translation isn't found
+- :moyai: Easy scope system (nested-object translations)
+- :slot_machine: A lot of examples
+
+#### Examples
+
+- [react-hoc](examples/react-hoc)
+- [react-simple](#usage-with-react)
+- [express](#usage-with-express)
+- [hapijs](#usage-with-hapijs)
+
 
 ## Installation
 
