@@ -24,16 +24,17 @@
   "author": "Alexander Morgunov <fxl@list.ru> (https://github.com/noveogroup-amorgunov)",
   "license": "MIT",
   "dependencies": {
-    "localizify": "^1.2.2",
-    "prop-types": "^15.6.0",
-    "react": "^16.2.0",
-    "react-dom": "^16.2.0"
+    "localizify": "1.2.3",
+    "prop-types": "15.6.2",
+    "react": "16.6.0",
+    "react-dom": "16.6.0"
   },
   "devDependencies": {
-    "parcel-bundler": "^1.4.1",
-    "autoprefixer": "^7.2.1",
-    "babel-preset-react-app": "^3.1.0",
-    "cross-env": "^5.1.1"
+    "@babel/core": "7.1.2",
+    "@babel/preset-react": "7.0.0",
+    "autoprefixer": "9.3.1",
+    "cross-env": "5.2.0",
+    "parcel-bundler": "1.10.3"
   },
   "postcss": {
     "modules": false,

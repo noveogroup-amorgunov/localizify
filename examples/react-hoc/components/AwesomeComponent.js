@@ -6,7 +6,7 @@ const AwesomeComponent = props => {
 
     const translationKeys = [
         { key: 'hello world' },
-        { key: 'how are you, {name: "Sasha"}?', data: { name: 'Sasha' } },
+        { key: 'how are you, {name}?', data: { name: 'Sasha' } },
         { key: 'unknown key' },
     ];
 
