@@ -1,10 +1,11 @@
-const webpack = require('webpack');
 const path = require('path');
+const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 
 module.exports = {
+  mode: 'production',
   entry: {
-    localizify: './src/index.js',
-    'localizify.min': './src/index.js',
+    localizify: path.resolve(__dirname, './src/index.js'),
+    'localizify.min': path.resolve(__dirname, './src/index.js'),
   },
   output: {
     path: path.resolve(__dirname, './dist'),
@@ -21,10 +22,12 @@ module.exports = {
       },
     ]
   },
-  plugins: [
-    new webpack.optimize.UglifyJsPlugin({
-      include: /\.min\.js$/,
-      compress: { warnings: false },
-    }),
-  ],
+  optimization: {
+    minimizer: [
+      new UglifyJsPlugin({
+        include: /\.min\.js$/,
+        uglifyOptions: { compress: { warnings: false } }
+      })
+    ]
+  }
 };

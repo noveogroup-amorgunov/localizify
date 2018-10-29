@@ -1,11 +1,12 @@
 /* global describe,it,beforeEach */
-const expect = require('chai').expect;
+const { expect } = require('chai');
 const { Instance: Localizify } = require('../src/index');
 
 
 const registerFrLocale = localizify => localizify.add('fr', { hello: 'Bonjour' }).setLocale('fr');
-const registerFrLocaleWithScopeTranslations = localizify =>
+const registerFrLocaleWithScopeTranslations = (localizify) => {
   localizify.add('fr', 'bot', { hello: 'Bonjour, {name}' }).setLocale('fr');
+};
 
 describe('Localizify', () => {
   let localizify;
@@ -66,29 +67,39 @@ describe('Localizify', () => {
   });
 
   describe('onLocaleChange(callback)', () => {
-    it('should fire event if locale was changed', () => {
+    it('should fire event if locale was changed', (done) => {
       let isChangedLocale = false;
       registerFrLocale(localizify);
+      localizify.setLocale('en');
       localizify.onLocaleChange(() => (isChangedLocale = true)); // eslint-disable-line
       localizify.setLocale('fr');
-      setTimeout(() => expect(isChangedLocale).to.be.equal(true), 0);
+      setTimeout(() => {
+        expect(isChangedLocale).to.be.equal(true);
+        done();
+      }, 0);
     });
   });
 
   describe('onTranslationNotFound(callback)', () => {
-    it('should fire event if translation not found', () => {
+    it('should fire event if translation not found', (done) => {
       let isTranslationNotFound = false;
       registerFrLocale(localizify);
-      localizify.onLocaleChange(() => (isTranslationNotFound = true)); // eslint-disable-line
+      localizify.onTranslationNotFound(() => (isTranslationNotFound = true)); // eslint-disable-line
       localizify.translate('foo');
-      setTimeout(() => expect(isTranslationNotFound).to.be.equal(true), 0);
+      setTimeout(() => {
+        expect(isTranslationNotFound).to.be.equal(true);
+        done();
+      }, 0);
     });
   });
 
   describe('add(locale, scope, translations)', () => {
-    it('should register new locale', () => {
+    it('should register new locale', (done) => {
       registerFrLocale(localizify);
-      expect(localizify.isLocale('fr')).to.be.equal(true);
+      setTimeout(() => {
+        expect(localizify.isLocale('fr')).to.be.equal(true);
+        done();
+      }, 0);
     });
 
     it('should add translations', () => {
@@ -156,12 +167,15 @@ describe('Localizify', () => {
       expect(localizify.translate('hello, {name}', { name: 'foo' })).to.be.equal('hello, foo');
     });
 
-    it('should fire event if key is not found', () => {
+    it('should fire event if key is not found', (done) => {
       let isTranslationNotFound = false;
       registerFrLocale(localizify);
-      localizify.onLocaleChange(() => (isTranslationNotFound = true)); // eslint-disable-line
+      localizify.onTranslationNotFound(() => (isTranslationNotFound = true)); // eslint-disable-line
       localizify.translate('foo');
-      setTimeout(() => expect(isTranslationNotFound).to.be.equal(true), 0);
+      setTimeout(() => {
+        expect(isTranslationNotFound).to.be.equal(true);
+        done();
+      }, 0);
     });
   });
 });

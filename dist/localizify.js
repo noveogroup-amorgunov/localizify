@@ -7,7 +7,7 @@
 		exports["localizify"] = factory();
 	else
 		root["localizify"] = factory();
-})(typeof self !== 'undefined' ? self : this, function() {
+})(window, function() {
 return /******/ (function(modules) { // webpackBootstrap
 /******/ 	// The module cache
 /******/ 	var installedModules = {};
@@ -46,12 +46,32 @@ return /******/ (function(modules) { // webpackBootstrap
 /******/ 	// define getter function for harmony exports
 /******/ 	__webpack_require__.d = function(exports, name, getter) {
 /******/ 		if(!__webpack_require__.o(exports, name)) {
-/******/ 			Object.defineProperty(exports, name, {
-/******/ 				configurable: false,
-/******/ 				enumerable: true,
-/******/ 				get: getter
-/******/ 			});
+/******/ 			Object.defineProperty(exports, name, { enumerable: true, get: getter });
 /******/ 		}
+/******/ 	};
+/******/
+/******/ 	// define __esModule on exports
+/******/ 	__webpack_require__.r = function(exports) {
+/******/ 		if(typeof Symbol !== 'undefined' && Symbol.toStringTag) {
+/******/ 			Object.defineProperty(exports, Symbol.toStringTag, { value: 'Module' });
+/******/ 		}
+/******/ 		Object.defineProperty(exports, '__esModule', { value: true });
+/******/ 	};
+/******/
+/******/ 	// create a fake namespace object
+/******/ 	// mode & 1: value is a module id, require it
+/******/ 	// mode & 2: merge all properties of value into the ns
+/******/ 	// mode & 4: return value when already ns object
+/******/ 	// mode & 8|1: behave like require
+/******/ 	__webpack_require__.t = function(value, mode) {
+/******/ 		if(mode & 1) value = __webpack_require__(value);
+/******/ 		if(mode & 8) return value;
+/******/ 		if((mode & 4) && typeof value === 'object' && value && value.__esModule) return value;
+/******/ 		var ns = Object.create(null);
+/******/ 		__webpack_require__.r(ns);
+/******/ 		Object.defineProperty(ns, 'default', { enumerable: true, value: value });
+/******/ 		if(mode & 2 && typeof value != 'string') for(var key in value) __webpack_require__.d(ns, key, function(key) { return value[key]; }.bind(null, key));
+/******/ 		return ns;
 /******/ 	};
 /******/
 /******/ 	// getDefaultExport function for compatibility with non-harmony modules
@@ -69,6 +89,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /******/ 	// __webpack_public_path__
 /******/ 	__webpack_require__.p = "";
 /******/
+/******/
 /******/ 	// Load entry module and return exports
 /******/ 	return __webpack_require__(__webpack_require__.s = 0);
 /******/ })
@@ -77,28 +98,33 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 0 */
 /***/ (function(module, exports, __webpack_require__) {
 
-"use strict";
-
-
 module.exports = __webpack_require__(1);
 
 /***/ }),
 /* 1 */
 /***/ (function(module, exports, __webpack_require__) {
 
-"use strict";
-
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
 
 /* global navigator */
 var EventEmitter = __webpack_require__(2);
+
 var normalize = __webpack_require__(3);
 
 var eventTypes = {
@@ -106,14 +132,17 @@ var eventTypes = {
   TRANSLATION_NOT_FOUND: 'TRANSLATION_NOT_FOUND'
 };
 
-var Localizify = function (_EventEmitter) {
+var Localizify =
+/*#__PURE__*/
+function (_EventEmitter) {
   _inherits(Localizify, _EventEmitter);
 
   function Localizify() {
+    var _this;
+
     _classCallCheck(this, Localizify);
 
-    var _this = _possibleConstructorReturn(this, (Localizify.__proto__ || Object.getPrototypeOf(Localizify)).call(this));
-
+    _this = _possibleConstructorReturn(this, _getPrototypeOf(Localizify).call(this));
     _this._store = {
       locale: 'en',
       localesList: ['en'],
@@ -125,7 +154,6 @@ var Localizify = function (_EventEmitter) {
     };
     return _this;
   }
-
   /**
    * Get Localizify instance private data
    * @return {object}
@@ -133,22 +161,20 @@ var Localizify = function (_EventEmitter) {
 
 
   _createClass(Localizify, [{
-    key: 'getStore',
+    key: "getStore",
     value: function getStore() {
       return this._store;
     }
-
     /**
      * Get selected locale
      * @return {string}
      */
 
   }, {
-    key: 'getLocale',
+    key: "getLocale",
     value: function getLocale() {
       return this.getStore().locale;
     }
-
     /**
      * Change or set locale
      * @param {string}
@@ -156,16 +182,17 @@ var Localizify = function (_EventEmitter) {
      */
 
   }, {
-    key: 'setLocale',
+    key: "setLocale",
     value: function setLocale(locale) {
       var previous = this.getStore().locale;
+
       if (this.isLocale(locale) && previous !== locale) {
         this.getStore().locale = locale;
         this.emit(eventTypes.CHANGE_LOCALE, locale, previous);
       }
+
       return this;
     }
-
     /**
      * Check that locale is registered
      * @param {string}
@@ -173,11 +200,10 @@ var Localizify = function (_EventEmitter) {
      */
 
   }, {
-    key: 'isLocale',
+    key: "isLocale",
     value: function isLocale(locale) {
       return this.getStore().localesList.includes(locale);
     }
-
     /**
      * Add handler which will be exucated when locale change
      * @param {function} callback
@@ -185,12 +211,11 @@ var Localizify = function (_EventEmitter) {
      */
 
   }, {
-    key: 'onLocaleChange',
+    key: "onLocaleChange",
     value: function onLocaleChange(callback) {
       this.on(eventTypes.CHANGE_LOCALE, callback);
       return callback;
     }
-
     /**
      * Add handler which will be exucated when translation is not found
      * @param {function} callback
@@ -198,46 +223,42 @@ var Localizify = function (_EventEmitter) {
      */
 
   }, {
-    key: 'onTranslationNotFound',
+    key: "onTranslationNotFound",
     value: function onTranslationNotFound(callback) {
       this.on(eventTypes.TRANSLATION_NOT_FOUND, callback);
     }
-
     /**
      * @param {string} scope
      * @return {Localizify}
      */
 
   }, {
-    key: 'setDefaultScope',
+    key: "setDefaultScope",
     value: function setDefaultScope(scope) {
       this.getStore().scope = scope;
       return this;
     }
-
     /**
      * @return {Localizify}
      */
 
   }, {
-    key: 'clearDefaultScope',
+    key: "clearDefaultScope",
     value: function clearDefaultScope() {
       this.getStore().scope = null;
       return this;
     }
-
     /**
-     * @param {String} translation
+     * @param {Object} translation
      * @return {Localizify}
      */
 
   }, {
-    key: 'registerInterpolations',
+    key: "registerInterpolations",
     value: function registerInterpolations(translation) {
       Object.assign(this.getStore().interpolations, translation);
       return this;
     }
-
     /**
      * Register new locale
      * @param {string}  locale
@@ -247,7 +268,7 @@ var Localizify = function (_EventEmitter) {
      */
 
   }, {
-    key: 'add',
+    key: "add",
     value: function add(locale, scopeOrTranslitions) {
       var _translations = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
 
@@ -265,21 +286,18 @@ var Localizify = function (_EventEmitter) {
 
       store.translations[locale] = Object.assign({}, store.translations[locale], trans);
       store.normalizedKeys[locale] = Object.assign({}, store.normalizedKeys[locale], normalize(trans));
-
       return this;
     }
-
     /**
      * Detect, where is script running
      * @return {boolean}
      */
 
   }, {
-    key: '_isBrowser',
+    key: "_isBrowser",
     value: function _isBrowser() {
-      return !(typeof module !== 'undefined' && module.exports) || typeof navigator !== 'undefined';
+      return !( true && module.exports) || typeof navigator !== 'undefined';
     }
-
     /**
      * Define user's language by browser or by request header language
      * @param  {string|false} _language
@@ -287,7 +305,7 @@ var Localizify = function (_EventEmitter) {
      */
 
   }, {
-    key: 'detectLocale',
+    key: "detectLocale",
     value: function detectLocale() {
       var _language = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
 
@@ -302,13 +320,12 @@ var Localizify = function (_EventEmitter) {
 
       if (!language) {
         return false;
-      }
+      } // Split locales with a region code
 
-      // Split locales with a region code
+
       var languageWithoutRegionCode = language.toLowerCase().split(/[_-]+/)[0];
       return this.isLocale(languageWithoutRegionCode) ? languageWithoutRegionCode : false;
     }
-
     /**
      * @param  {string}
      * @param  {object|null}
@@ -316,7 +333,7 @@ var Localizify = function (_EventEmitter) {
      */
 
   }, {
-    key: '_replaceData',
+    key: "_replaceData",
     value: function _replaceData(_msg, data) {
       var _this2 = this;
 
@@ -326,12 +343,11 @@ var Localizify = function (_EventEmitter) {
         var term = _term.replace(/[{}]/gi, '');
 
         var replaceTo = data[term] || _this2.getStore().interpolations[term] || _term;
+
         msg = msg.replace(_term, replaceTo);
       });
-
       return msg;
     }
-
     /**
      * @param  {string} key
      * @param  {object} data
@@ -339,7 +355,7 @@ var Localizify = function (_EventEmitter) {
      */
 
   }, {
-    key: 'translate',
+    key: "translate",
     value: function translate(key) {
       var data = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
@@ -355,8 +371,7 @@ var Localizify = function (_EventEmitter) {
       }
 
       var keys = this.getStore().normalizedKeys[locale];
-      var normalizeKey = (scope ? scope + '.' : '') + key;
-
+      var normalizeKey = (scope ? "".concat(scope, ".") : '') + key;
       var hasTranslation = keys && keys[normalizeKey];
 
       if (!hasTranslation) {
@@ -373,31 +388,30 @@ var Localizify = function (_EventEmitter) {
 var localizify = new Localizify();
 localizify.Instance = Localizify;
 localizify.t = localizify.translate.bind(localizify);
-
 module.exports = localizify;
 
 /***/ }),
 /* 2 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+/***/ (function(module, exports) {
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
 /**
  * Very light event emitter
  * @class EventEmitter
  */
-var EventEmitter = function () {
+var EventEmitter =
+/*#__PURE__*/
+function () {
   function EventEmitter() {
     _classCallCheck(this, EventEmitter);
 
     this._listeners = {};
   }
-
   /**
    * @param {string} event
    * @return {array<function>}
@@ -405,11 +419,10 @@ var EventEmitter = function () {
 
 
   _createClass(EventEmitter, [{
-    key: 'getListeners',
+    key: "getListeners",
     value: function getListeners(event) {
       return this._listeners[event] || [];
     }
-
     /**
      * @param {string} event
      * @param {function} listener
@@ -417,23 +430,24 @@ var EventEmitter = function () {
      */
 
   }, {
-    key: 'on',
+    key: "on",
     value: function on(event, listener) {
       if (typeof listener !== 'function') {
         throw new TypeError('Listener must be a function');
       }
 
       var listeners = this.getListeners(event);
+
       if (!listeners.includes(listener)) {
         if (!this.hasListeners(event)) {
           this._listeners[event] = [];
         }
+
         this._listeners[event].push(listener);
       }
 
       return listener;
     }
-
     /**
      * @param {string} event
      * @param {function} listener
@@ -441,7 +455,7 @@ var EventEmitter = function () {
      */
 
   }, {
-    key: 'off',
+    key: "off",
     value: function off(event, listener) {
       if (this.hasListeners(event)) {
         var listeners = this.getListeners(event);
@@ -449,9 +463,9 @@ var EventEmitter = function () {
           return listener !== l;
         });
       }
+
       return this;
     }
-
     /**
      * @param {string} event
      * @param {...object} args
@@ -459,11 +473,11 @@ var EventEmitter = function () {
      */
 
   }, {
-    key: 'emit',
+    key: "emit",
     value: function emit(event) {
       var _this = this;
 
-      for (var _len = arguments.length, args = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
+      for (var _len = arguments.length, args = new Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
         args[_key - 1] = arguments[_key];
       }
 
@@ -473,14 +487,13 @@ var EventEmitter = function () {
       });
       return this;
     }
-
     /**
      * @param {string} event
      * @return {boolean}
      */
 
   }, {
-    key: 'hasListeners',
+    key: "hasListeners",
     value: function hasListeners(event) {
       var listeners = this.getListeners(event);
       return listeners.length > 0;
@@ -494,26 +507,31 @@ module.exports = EventEmitter;
 
 /***/ }),
 /* 3 */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ (function(module, exports) {
 
-"use strict";
+function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _nonIterableSpread(); }
 
+function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance"); }
 
-function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
+function _iterableToArray(iter) { if (Symbol.iterator in Object(iter) || Object.prototype.toString.call(iter) === "[object Arguments]") return Array.from(iter); }
+
+function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = new Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } }
 
 var isPlainObject = function isPlainObject(val) {
   return val !== null && Object.prototype.toString.call(val) === '[object Object]';
 };
+
 var isString = function isString(val) {
   return typeof val === 'string';
 };
-
 /**
  * Normalize not flatten object to one-level object
  * @param {*} object
  * @param {array} acc
  * @param {object} results
  */
+
+
 var normalize = function normalize(object) {
   var acc = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : [];
   var results = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
@@ -522,9 +540,10 @@ var normalize = function normalize(object) {
     results[acc.join('.')] = object; // eslint-disable-line
   } else if (isPlainObject(object)) {
     Object.keys(object).forEach(function (key) {
-      return normalize(object[key], [].concat(_toConsumableArray(acc), [key]), results);
+      return normalize(object[key], _toConsumableArray(acc).concat([key]), results);
     });
   }
+
   return results;
 };
 

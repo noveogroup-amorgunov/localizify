@@ -70,7 +70,7 @@ or download file (full version or minify bundle) from `dist` folder and add the 
 
 ### Quick start
 
-[localizify](https://github.com/noveogroup-amorgunov/localizify) returns instance of Localizify, so it's singelton. You can add translations in one module and use it in another (but you can get Localizify from `localizify.Instance`).
+[localizify](https://github.com/noveogroup-amorgunov/localizify) returns instance of `Localizify`, so it's singelton. You can add translations in one module and use it in another (but you can get `Localizify` from `localizify.Instance`).
 
 First of all you need add locales with translations and set locale by default:
 
