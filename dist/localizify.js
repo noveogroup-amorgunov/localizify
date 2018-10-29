@@ -7,7 +7,7 @@
 		exports["localizify"] = factory();
 	else
 		root["localizify"] = factory();
-})(window, function() {
+})((typeof window !== "undefined" ? window : this), function() {
 return /******/ (function(modules) { // webpackBootstrap
 /******/ 	// The module cache
 /******/ 	var installedModules = {};

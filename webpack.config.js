@@ -11,7 +11,8 @@ module.exports = {
     path: path.resolve(__dirname, './dist'),
     filename: '[name].js',
     library: 'localizify',
-    libraryTarget: 'umd'
+    libraryTarget: 'umd',
+    globalObject: '(typeof window !== "undefined" ? window : this)'
   },
   module: {
     rules: [

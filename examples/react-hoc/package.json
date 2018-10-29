@@ -24,7 +24,7 @@
   "author": "Alexander Morgunov <fxl@list.ru> (https://github.com/noveogroup-amorgunov)",
   "license": "MIT",
   "dependencies": {
-    "localizify": "1.2.3",
+    "localizify": "1.2.4",
     "prop-types": "15.6.2",
     "react": "16.6.0",
     "react-dom": "16.6.0"
