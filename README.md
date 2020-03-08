@@ -1,39 +1,18 @@
-<h1 align="center">
-  localizify
-  <br>
-</h1>
+<div align="center">
 
-<h4 align="center">Localize your messages easily</h4>
+![localizify](/logo.png?raw=true "Localize your messages easily")
 
-<p align="center">
-  <a href="https://travis-ci.org/noveogroup-amorgunov/localizify">
-    <img src="https://img.shields.io/travis/noveogroup-amorgunov/localizify/master.svg?style=flat-square"
-         alt="Travis Build Status" />
-  </a>
-  <a href="https://www.npmjs.com/package/localizify">
-    <img src="https://img.shields.io/npm/dm/localizify.svg?style=flat-square"
-         alt="Downloads per month" />
-  </a>
-  <a href="https://www.npmjs.com/package/localizify">
-    <img src="https://img.shields.io/npm/v/localizify.svg?style=flat-square"
-         alt="Version" />
-  </a>
-  <a href="https://www.npmjs.com/package/localizify">
-    <img src="https://img.shields.io/npm/l/localizify.svg?style=flat-square"
-         alt="License" />
-  </a>
-   <a href="https://github.com/airbnb/javascript">
-    <img src="https://camo.githubusercontent.com/1c5c800fbdabc79cfaca8c90dd47022a5b5c7486/68747470733a2f2f696d672e736869656c64732e696f2f62616467652f636f64652532307374796c652d616972626e622d627269676874677265656e2e7376673f7374796c653d666c61742d737175617265"
-         alt="Standart" />
-  </a> 
-  
-</p>
+[![Travis Build Status](https://flat.badgen.net/travis/noveogroup-amorgunov/localizify)](https://travis-ci.org/noveogroup-amorgunov/localizify) [![Downloads per month](https://flat.badgen.net/npm/dm/localizify)](https://www.npmjs.com/package/localizify) [![Version](https://flat.badgen.net/npm/v/localizify)](https://www.npmjs.com/package/localizify) [![License](https://flat.badgen.net/npm/license/localizify)](https://www.npmjs.com/package/localizify) ![Typed with TypeScript](https://flat.badgen.net/badge/icon/Typed?icon=typescript&label&labelColor=blue&color=555555)
 
-Very light library for translation and localization in `Node.js` and the browser :cn: :us: :fr: :es:	:it: :ru: :uk: :de: :performing_arts:
+<br/>
+<br/>
+</div>
 
+Very light and performant library for translation and localization in `Node.js` and the browser.
 
 #### Features
 
+- ❗️ Written on TypeScript
 - :rocket: No dependencies (only 2KB gziped)
 - :dancers: Translation and localization
 - :gift: Interpolation of values to translations
