@@ -248,11 +248,15 @@ Check that locale is registered
 
 #### `localizify.onLocaleChange(function callback) => function`
 
-Add handler which will be exucated when locale change.
+Add handler which will be executed when locale change.
 
 #### `localizify.onTranslationNotFound(function callback) => function`
 
-Add handler which will be exucated when translation is not found.
+Add handler which will be executed when translation is not found.
+
+#### `localizify.onReplacedDataNotFound(function callback) => function`
+
+Handler will be executed when template data is not passed.
 
 #### `localizify.setDefaultScope(string scope) => this`
 
