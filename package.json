@@ -1,6 +1,6 @@
 {
   "name": "localizify",
-  "version": "1.2.4",
+  "version": "1.2.5",
   "description": "Localize your messages easily",
   "main": "dist/localizify.min.js",
   "scripts": {
