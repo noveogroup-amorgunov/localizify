@@ -146,6 +146,29 @@ describe('Localizify', () => {
     it('should replace values to translations in message', () => {
       expect(localizify._replaceData('Bonjour, {name}', { name: 'foo' })).to.be.equal('Bonjour, foo');
     });
+
+    it('should replace data to negative values except undefined', () => {
+      const data = {
+        count: 0,
+        name: '',
+        mounted: false,
+        item: null
+      };
+      const expected = '0, , false, null';
+
+      expect(localizify._replaceData('{count}, {name}, {mounted}, {item}', data)).to.be.equal(expected);
+    });
+
+    it('should fire event if replaced data is not passed', (done) => {
+      let isTemplateDataNotFound = false;
+      localizify.onReplacedDataNotFound(() => (isTemplateDataNotFound = true)); // eslint-disable-line
+      localizify._replaceData('My name is {name}', {});
+
+      setTimeout(() => {
+        expect(isTemplateDataNotFound).to.be.equal(true);
+        done();
+      }, 0);
+    });
   });
 
   describe('translate(key, data)', () => {

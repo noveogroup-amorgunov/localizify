@@ -5,6 +5,7 @@ const normalize = require('./normalize');
 const eventTypes = {
   CHANGE_LOCALE: 'CHANGE_LOCALE',
   TRANSLATION_NOT_FOUND: 'TRANSLATION_NOT_FOUND',
+  REPLACED_DATA_NOT_FOUND: 'REPLACED_DATA_NOT_FOUND',
 };
 
 class Localizify extends EventEmitter {
@@ -62,7 +63,7 @@ class Localizify extends EventEmitter {
   }
 
   /**
-   * Add handler which will be exucated when locale change
+   * Add handler which will be executed when locale change
    * @param {function} callback
    * @return {function}
    */
@@ -72,12 +73,16 @@ class Localizify extends EventEmitter {
   }
 
   /**
-   * Add handler which will be exucated when translation is not found
+   * Add handler which will be executed when translation is not found
    * @param {function} callback
    * @return {function}
    */
   onTranslationNotFound(callback) {
     this.on(eventTypes.TRANSLATION_NOT_FOUND, callback);
+  }
+
+  onReplacedDataNotFound(callback) {
+    this.on(eventTypes.REPLACED_DATA_NOT_FOUND, callback);
   }
 
   /**
@@ -177,7 +182,17 @@ class Localizify extends EventEmitter {
     foundedTerms.forEach((_term) => {
       const term = _term.replace(/[{}]/gi, '');
 
-      const replaceTo = data[term] || this.getStore().interpolations[term] || _term;
+      const replacedTextCases = [
+        data[term],
+        this.getStore().interpolations[term],
+        _term
+      ];
+      const replaceTo = replacedTextCases.find(value => typeof value !== 'undefined');
+
+      if (replaceTo === _term) {
+        this.emit(eventTypes.REPLACED_DATA_NOT_FOUND, _msg, _term, data);
+      }
+
       msg = msg.replace(_term, replaceTo);
     });
 
