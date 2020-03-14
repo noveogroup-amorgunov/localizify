@@ -129,7 +129,8 @@ var normalize = __webpack_require__(3);
 
 var eventTypes = {
   CHANGE_LOCALE: 'CHANGE_LOCALE',
-  TRANSLATION_NOT_FOUND: 'TRANSLATION_NOT_FOUND'
+  TRANSLATION_NOT_FOUND: 'TRANSLATION_NOT_FOUND',
+  REPLACED_DATA_NOT_FOUND: 'REPLACED_DATA_NOT_FOUND'
 };
 
 var Localizify =
@@ -205,7 +206,7 @@ function (_EventEmitter) {
       return this.getStore().localesList.includes(locale);
     }
     /**
-     * Add handler which will be exucated when locale change
+     * Add handler which will be executed when locale change
      * @param {function} callback
      * @return {function}
      */
@@ -217,7 +218,7 @@ function (_EventEmitter) {
       return callback;
     }
     /**
-     * Add handler which will be exucated when translation is not found
+     * Add handler which will be executed when translation is not found
      * @param {function} callback
      * @return {function}
      */
@@ -226,6 +227,11 @@ function (_EventEmitter) {
     key: "onTranslationNotFound",
     value: function onTranslationNotFound(callback) {
       this.on(eventTypes.TRANSLATION_NOT_FOUND, callback);
+    }
+  }, {
+    key: "onReplacedDataNotFound",
+    value: function onReplacedDataNotFound(callback) {
+      this.on(eventTypes.REPLACED_DATA_NOT_FOUND, callback);
     }
     /**
      * @param {string} scope
@@ -342,7 +348,14 @@ function (_EventEmitter) {
       foundedTerms.forEach(function (_term) {
         var term = _term.replace(/[{}]/gi, '');
 
-        var replaceTo = data[term] || _this2.getStore().interpolations[term] || _term;
+        var replacedTextCases = [data[term], _this2.getStore().interpolations[term], _term];
+        var replaceTo = replacedTextCases.find(function (value) {
+          return typeof value !== 'undefined';
+        });
+
+        if (replaceTo === _term) {
+          _this2.emit(eventTypes.REPLACED_DATA_NOT_FOUND, _msg, _term, data);
+        }
 
         msg = msg.replace(_term, replaceTo);
       });
