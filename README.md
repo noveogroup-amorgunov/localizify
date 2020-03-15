@@ -10,7 +10,7 @@
 
 localizify is very light and performant *library for translation and localization* in `Node.js` and the browser.
 
-#### Goals and features
+## Goals and features
 
 - ❗️ Written on TypeScript
 - :rocket: No dependencies (only 2KB gziped)
@@ -21,11 +21,11 @@ localizify is very light and performant *library for translation and localizatio
 - :moyai: Easy scope system (nested-object translations)
 - :slot_machine: A lot of examples
 
-#### Examples
+## Examples
 
-- react: you can use [react-localizify](https://github.com/noveogroup-amorgunov/react-localizify), which provide high order component and hook, or write it yourself by example ([see it here](./docs/usage-with-react.md))
-- [express](./docs/usage-with-express.md)
-- [hapijs](./docs/usage-with-hapijs.md)
+- react: you can use [react-localizify](https://github.com/noveogroup-amorgunov/react-localizify), which provide high order component and hook, or write it yourself by example ([see it in ./docs/usage-with-react](./docs/usage-with-react.md))
+- [./docs/usage-with-express](./docs/usage-with-express.md)
+- [./docs/usage-with-hapijs](./docs/usage-with-hapijs.md)
 
 ## Installation
 
