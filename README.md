@@ -8,7 +8,7 @@
 <br/>
 </div>
 
-localizify is very light and performant *library for translation and localization* in `Node.js` and the browser.
+localizify is very **light and performant library for translation and localization** in `Node.js` and the browser.
 
 ## Goals and features
 

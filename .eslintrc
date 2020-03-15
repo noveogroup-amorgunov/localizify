@@ -28,6 +28,7 @@
     "implicit-arrow-linebreak": "off",
     "function-paren-newline": "off",
     "operator-linebreak": "off",
-    "@typescript-eslint/explicit-function-return-type": "off"
+    "@typescript-eslint/explicit-function-return-type": "off",
+    "@typescript-eslint/ban-ts-ignore": "off"
   }
 }

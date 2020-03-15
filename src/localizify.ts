@@ -150,7 +150,7 @@ export class Localizify extends EventEmitter {
             : false;
     }
 
-    private replaceData(_msg: string, data: Record<string, string> | null) {
+    private replaceData(_msg: string, data: Record<string, unknown> | null) {
         let msg = _msg;
         const terms = msg.match(/\{(.*?)\}/gi) || [];
 
@@ -170,7 +170,7 @@ export class Localizify extends EventEmitter {
                 this.emit(EventTypes.ReplacedDataNotFound, _msg, _term, data);
             }
 
-            msg = msg.replace(_term, replaceTo);
+            msg = msg.replace(_term, replaceTo as string);
         });
 
         return msg;

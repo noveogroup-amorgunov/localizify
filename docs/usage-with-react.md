@@ -1,5 +1,7 @@
 # Usage with React
 
+## Deprecated (for react v15)
+
 You can see example in [spring-mvc-react](https://github.com/noveogroup-amorgunov/spring-mvc-react) example repository.
 
 First, create a language switcher component:

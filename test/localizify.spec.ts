@@ -33,24 +33,28 @@ describe('Localizify', () => {
             expect(localizify.getLocale()).toEqual('fr');
         });
 
-        it('should not set locale if it already set', () => {
-            let isChangedLocale = false;
-            localizify.onLocaleChange(() => {
-                isChangedLocale = true;
-            });
+        it('should not set locale if it already set', done => {
+            const callback = jest.fn();
+
+            localizify.onLocaleChange(callback);
             localizify.setLocale('en');
 
-            setTimeout(() => expect(isChangedLocale).toBeFalsy(), 0);
+            process.nextTick(() => {
+                expect(callback).toHaveBeenCalledTimes(0);
+                done();
+            });
         });
 
-        it('should not set locale if it is not registered', () => {
-            let isChangedLocale = false;
-            localizify.onLocaleChange(() => {
-                isChangedLocale = true;
-            });
+        it('should not set locale if it is not registered', done => {
+            const callback = jest.fn();
+
+            localizify.onLocaleChange(callback);
             localizify.setLocale('fr');
 
-            setTimeout(() => expect(isChangedLocale).toBeFalsy(), 0);
+            process.nextTick(() => {
+                expect(callback).toHaveBeenCalledTimes(0);
+                done();
+            });
         });
     });
 
@@ -72,44 +76,46 @@ describe('Localizify', () => {
 
     describe('onLocaleChange', () => {
         it('should fire event if locale was changed', done => {
-            let isChangedLocale = false;
-
             registerFrLocale(localizify);
+
+            const callback = jest.fn();
+
+            localizify.onLocaleChange(callback);
             localizify.setLocale('en');
-            localizify.onLocaleChange(() => {
-                isChangedLocale = true;
-            });
             localizify.setLocale('fr');
 
-            setTimeout(() => {
-                expect(isChangedLocale).toBeTruthy();
+            process.nextTick(() => {
+                expect(callback).toHaveBeenCalledTimes(2);
+                expect(callback).toHaveBeenLastCalledWith('fr', 'en');
                 done();
-            }, 0);
+            });
         });
     });
 
     describe('onTranslationNotFound', () => {
         it('should fire event if translation not found', done => {
-            let isTranslationNotFound = false;
             registerFrLocale(localizify);
-            localizify.onTranslationNotFound(() => {
-                isTranslationNotFound = true;
-            });
+
+            const callback = jest.fn();
+
+            localizify.onTranslationNotFound(callback);
             localizify.translate('foo');
-            setTimeout(() => {
-                expect(isTranslationNotFound).toBeTruthy();
+
+            process.nextTick(() => {
+                expect(callback).toHaveBeenCalledWith('fr', 'foo', null);
                 done();
-            }, 0);
+            });
         });
     });
 
     describe('add', () => {
         it('should register new locale', done => {
             registerFrLocale(localizify);
-            setTimeout(() => {
+
+            process.nextTick(() => {
                 expect(localizify.isLocale('fr')).toBeTruthy();
                 done();
-            }, 0);
+            });
         });
 
         it('should add translations', () => {
@@ -156,7 +162,8 @@ describe('Localizify', () => {
 
     describe('replaceData', () => {
         it('should replace values to translations in message', () => {
-            const actual = (localizify as any).replaceData('Bonjour, {name}', {
+            // @ts-ignore test private method
+            const actual = localizify.replaceData('Bonjour, {name}', {
                 name: 'foo',
             });
 
@@ -164,44 +171,52 @@ describe('Localizify', () => {
         });
 
         it('should replace data to negative values except undefined', () => {
-            const data: Record<string, any> = {
+            const data: Record<string, number | string | boolean | null> = {
                 count: 0,
                 name: '',
                 mounted: false,
                 item: null,
             };
+
+            // @ts-ignore test private method
+            const actual = localizify.replaceData(
+                '{count}, {name}, {mounted}, {item}',
+                data,
+            );
             const expected = '0, , false, null';
 
-            expect(
-                (localizify as any).replaceData(
-                    '{count}, {name}, {mounted}, {item}',
-                    data,
-                ),
-            ).toEqual(expected);
+            expect(actual).toEqual(expected);
         });
 
         it('should fire event if replaced data is not passed', done => {
-            let isTemplateDataNotFound = false;
-            localizify.onReplacedDataNotFound(() => {
-                isTemplateDataNotFound = true;
-            });
-            (localizify as any).replaceData('My name is {name}', {});
+            const callback = jest.fn();
 
-            setTimeout(() => {
-                expect(isTemplateDataNotFound).toBeTruthy();
+            localizify.onReplacedDataNotFound(callback);
+            // @ts-ignore test private method
+            localizify.replaceData('My name is {name}', {});
+
+            process.nextTick(() => {
+                expect(callback).toHaveBeenCalledWith(
+                    'My name is {name}',
+                    '{name}',
+                    {},
+                );
                 done();
-            }, 0);
+            });
         });
     });
 
     describe('translate', () => {
         it('should return translated message by key', () => {
             registerFrLocale(localizify);
+
             expect(localizify.translate('hello')).toEqual('Bonjour');
         });
 
         it('should throw exception if key is not provided', () => {
-            const wrap = () => (localizify as any).translate();
+            // @ts-ignore test method with wrong args
+            const wrap = () => localizify.translate();
+
             expect(wrap).toThrowError(Error);
         });
 
@@ -218,16 +233,17 @@ describe('Localizify', () => {
         });
 
         it('should fire event if key is not found', done => {
-            let isTranslationNotFound = false;
             registerFrLocale(localizify);
-            localizify.onTranslationNotFound(() => {
-                isTranslationNotFound = true;
-            });
+
+            const callback = jest.fn();
+
+            localizify.onTranslationNotFound(callback);
             localizify.translate('foo');
-            setTimeout(() => {
-                expect(isTranslationNotFound).toEqual(true);
+
+            process.nextTick(() => {
+                expect(callback).toHaveBeenCalled();
                 done();
-            }, 0);
+            });
         });
     });
 });
