@@ -91,7 +91,7 @@ export class Localizify extends EventEmitter {
     add(
         locale: string,
         scopeOrTranslations: string | Translation,
-        _translations?: Translation
+        _translations?: Translation,
     ) {
         const store = this.getStore();
         let trans:
@@ -160,9 +160,11 @@ export class Localizify extends EventEmitter {
             const replacedTextCases = [
                 data[term],
                 this.getStore().interpolations[term],
-                _term
+                _term,
             ];
-            const replaceTo = replacedTextCases.find(value => typeof value !== 'undefined');
+            const replaceTo = replacedTextCases.find(
+                value => typeof value !== 'undefined',
+            );
 
             if (replaceTo === _term) {
                 this.emit(EventTypes.ReplacedDataNotFound, _msg, _term, data);
@@ -197,7 +199,7 @@ export class Localizify extends EventEmitter {
 
         return this.replaceData(
             hasTranslation ? keys[normalizeKey] : key,
-            data
+            data,
         );
     }
 }

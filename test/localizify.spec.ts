@@ -1,8 +1,8 @@
 import { Localizify } from '../src/localizify';
-import { isBrowser } from '../src/utils';
 
-const registerFrLocale = (localizify: Localizify) =>
+const registerFrLocale = (localizify: Localizify) => {
     localizify.add('fr', { hello: 'Bonjour' }).setLocale('fr');
+};
 const registerFrLocaleWithScopeTranslations = (localizify: Localizify) => {
     localizify.add('fr', 'bot', { hello: 'Bonjour, {name}' }).setLocale('fr');
 };
@@ -92,9 +92,9 @@ describe('Localizify', () => {
         it('should fire event if translation not found', done => {
             let isTranslationNotFound = false;
             registerFrLocale(localizify);
-            localizify.onTranslationNotFound(
-                () => (isTranslationNotFound = true)
-            ); // eslint-disable-line
+            localizify.onTranslationNotFound(() => {
+                isTranslationNotFound = true;
+            });
             localizify.translate('foo');
             setTimeout(() => {
                 expect(isTranslationNotFound).toBeTruthy();
@@ -139,7 +139,7 @@ describe('Localizify', () => {
         it("should detect locale by header 'Accept-Language'", () => {
             const headers = { 'accept-language': 'en-US,en;q=0.8' };
             expect(localizify.detectLocale(headers['accept-language'])).toEqual(
-                'en'
+                'en',
             );
         });
 
@@ -156,11 +156,11 @@ describe('Localizify', () => {
 
     describe('replaceData', () => {
         it('should replace values to translations in message', () => {
-            expect(
-                (localizify as any).replaceData('Bonjour, {name}', {
-                    name: 'foo',
-                })
-            ).toEqual('Bonjour, foo');
+            const actual = (localizify as any).replaceData('Bonjour, {name}', {
+                name: 'foo',
+            });
+
+            expect(actual).toEqual('Bonjour, foo');
         });
 
         it('should replace data to negative values except undefined', () => {
@@ -168,16 +168,23 @@ describe('Localizify', () => {
                 count: 0,
                 name: '',
                 mounted: false,
-                item: null
+                item: null,
             };
             const expected = '0, , false, null';
 
-            expect((localizify as any).replaceData('{count}, {name}, {mounted}, {item}', data)).toEqual(expected);
+            expect(
+                (localizify as any).replaceData(
+                    '{count}, {name}, {mounted}, {item}',
+                    data,
+                ),
+            ).toEqual(expected);
         });
 
-        it('should fire event if replaced data is not passed', (done) => {
+        it('should fire event if replaced data is not passed', done => {
             let isTemplateDataNotFound = false;
-            localizify.onReplacedDataNotFound(() => (isTemplateDataNotFound = true)); // eslint-disable-line
+            localizify.onReplacedDataNotFound(() => {
+                isTemplateDataNotFound = true;
+            });
             (localizify as any).replaceData('My name is {name}', {});
 
             setTimeout(() => {
@@ -203,17 +210,19 @@ describe('Localizify', () => {
         });
 
         it('should return same message with interpolation if key is not found', () => {
-            expect(
-                localizify.translate('hello, {name}', { name: 'foo' })
-            ).toEqual('hello, foo');
+            const actual = localizify.translate('hello, {name}', {
+                name: 'foo',
+            });
+
+            expect(actual).toEqual('hello, foo');
         });
 
         it('should fire event if key is not found', done => {
             let isTranslationNotFound = false;
             registerFrLocale(localizify);
-            localizify.onTranslationNotFound(
-                () => (isTranslationNotFound = true)
-            ); // eslint-disable-line
+            localizify.onTranslationNotFound(() => {
+                isTranslationNotFound = true;
+            });
             localizify.translate('foo');
             setTimeout(() => {
                 expect(isTranslationNotFound).toEqual(true);

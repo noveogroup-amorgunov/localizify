@@ -10,13 +10,14 @@ type Value = object | string;
 export const normalize = (
     object: Value,
     acc: string[] = [],
-    results: Record<string, Value> = {}
+    results: Record<string, Value> = {},
 ) => {
     if (isString(object)) {
+        // eslint-disable-next-line no-param-reassign
         results[acc.join('.')] = object;
     } else if (isPlainObject(object)) {
         Object.entries(object).forEach(([key, value]) =>
-            normalize(value, [...acc, key], results)
+            normalize(value, [...acc, key], results),
         );
     }
 
