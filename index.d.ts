@@ -109,9 +109,9 @@ declare const localizify: localizify.Localizify;
 declare function t(key: string, data?: Record<string, string>): string;
 
 /**
-    But default returns instance of Localizify, so it's singelton.
-    You can add translations in one module and use it in another.
-    But you can create another Localizify instance.
+    By default returns instance of Localizify, so it's a singelton.
+    Translations that has been added in one module can be used in another.
+    But you can also create another Localizify instance.
  */
 declare const Instance: localizify.Instance;
 
