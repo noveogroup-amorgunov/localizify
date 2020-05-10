@@ -1,4 +1,4 @@
-const isPlainObject = (val: unknown) =>
+const isPlainObject = (val: unknown): val is Record<string, Value> =>
     val !== null && Object.prototype.toString.call(val) === '[object Object]';
 const isString = (val: unknown) => typeof val === 'string';
 
@@ -16,9 +16,9 @@ export const normalize = (
         // eslint-disable-next-line no-param-reassign
         results[acc.join('.')] = object;
     } else if (isPlainObject(object)) {
-        Object.entries(object).forEach(([key, value]) =>
-            normalize(value, [...acc, key], results),
-        );
+        Object.keys(object).forEach(key => {
+            normalize(object[key], [...acc, key], results);
+        });
     }
 
     return results;

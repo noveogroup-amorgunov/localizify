@@ -131,6 +131,7 @@ var EventTypes;
 (function (EventTypes) {
     EventTypes["ChangeLocale"] = "CHANGE_LOCALE";
     EventTypes["TranslationNotFound"] = "TRANSLATION_NOT_FOUND";
+    EventTypes["ReplacedDataNotFound"] = "REPLACED_DATA_NOT_FOUND";
 })(EventTypes = exports.EventTypes || (exports.EventTypes = {}));
 var Localizify = /** @class */ (function (_super) {
     __extends(Localizify, _super);
@@ -162,7 +163,7 @@ var Localizify = /** @class */ (function (_super) {
         return this;
     };
     Localizify.prototype.isLocale = function (locale) {
-        return this.getStore().localesList.includes(locale);
+        return this.getStore().localesList.indexOf(locale) !== -1;
     };
     Localizify.prototype.onLocaleChange = function (callback) {
         this.on(EventTypes.ChangeLocale, callback);
@@ -170,6 +171,9 @@ var Localizify = /** @class */ (function (_super) {
     };
     Localizify.prototype.onTranslationNotFound = function (callback) {
         this.on(EventTypes.TranslationNotFound, callback);
+    };
+    Localizify.prototype.onReplacedDataNotFound = function (callback) {
+        this.on(EventTypes.ReplacedDataNotFound, callback);
     };
     Localizify.prototype.setDefaultScope = function (scope) {
         this.getStore().scope = scope;
@@ -231,9 +235,15 @@ var Localizify = /** @class */ (function (_super) {
         var terms = msg.match(/\{(.*?)\}/gi) || [];
         terms.forEach(function (_term) {
             var term = _term.replace(/[{}]/gi, '');
-            var replaceTo = (data && data[term]) ||
-                _this.getStore().interpolations[term] ||
-                _term;
+            var replacedTextCases = [
+                data[term],
+                _this.getStore().interpolations[term],
+                _term,
+            ];
+            var replaceTo = replacedTextCases.find(function (value) { return typeof value !== 'undefined'; });
+            if (replaceTo === _term) {
+                _this.emit(EventTypes.ReplacedDataNotFound, _msg, _term, data);
+            }
             msg = msg.replace(_term, replaceTo);
         });
         return msg;
@@ -291,12 +301,12 @@ exports.normalize = function (object, acc, results) {
     if (acc === void 0) { acc = []; }
     if (results === void 0) { results = {}; }
     if (isString(object)) {
+        // eslint-disable-next-line no-param-reassign
         results[acc.join('.')] = object;
     }
     else if (isPlainObject(object)) {
-        Object.entries(object).forEach(function (_a) {
-            var key = _a[0], value = _a[1];
-            return exports.normalize(value, __spreadArrays(acc, [key]), results);
+        Object.keys(object).forEach(function (key) {
+            exports.normalize(object[key], __spreadArrays(acc, [key]), results);
         });
     }
     return results;

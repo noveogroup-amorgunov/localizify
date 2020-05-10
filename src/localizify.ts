@@ -50,7 +50,7 @@ export class Localizify extends EventEmitter {
     }
 
     isLocale(locale: string) {
-        return this.getStore().localesList.includes(locale);
+        return this.getStore().localesList.indexOf(locale) !== -1;
     }
 
     onLocaleChange(callback: Callback) {
