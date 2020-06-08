@@ -176,14 +176,13 @@ export class Localizify extends EventEmitter {
         return msg;
     }
 
-    translate(key: string, data: Record<string, string> = {}) {
+    translate(key: string, data: Record<string, string> = {}, translation?:string) {
         if (!key) {
             throw new Error('"key" param is required');
         }
 
         const { locale: l, scope = this.getStore().scope } = data;
-        const locale = (this.isLocale(l) && l) || this.getStore().locale;
-
+        const locale = translation && this.getStore().localesList.includes(translation) ? translation : (this.isLocale(l) && l) || this.getStore().locale;
         if (!locale) {
             throw new Error('Current locale is not defined');
         }
