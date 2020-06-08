@@ -248,13 +248,13 @@ var Localizify = /** @class */ (function (_super) {
         });
         return msg;
     };
-    Localizify.prototype.translate = function (key, data) {
+    Localizify.prototype.translate = function (key, data, translation) {
         if (data === void 0) { data = {}; }
         if (!key) {
             throw new Error('"key" param is required');
         }
         var l = data.locale, _a = data.scope, scope = _a === void 0 ? this.getStore().scope : _a;
-        var locale = (this.isLocale(l) && l) || this.getStore().locale;
+        var locale = translation && this.getStore().localesList.includes(translation) ? translation : (this.isLocale(l) && l) || this.getStore().locale;
         if (!locale) {
             throw new Error('Current locale is not defined');
         }
