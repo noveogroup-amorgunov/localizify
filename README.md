@@ -54,7 +54,8 @@ or download file (full version or minify bundle) from `dist` folder and add the 
 First of all you need add locales with translations and set locale by default:
 
 ```javascript
-const localizify = require('localizify');
+const { default: localizify } = require('localizify'); // 
+
 
 const en = require('../messages/en.json');
 const fr = require('../messages/fr.json');
