@@ -1,211 +1,132 @@
-<div align="center">
+# Localizify
 
-[![localizify](/logo.png?raw=true "Localize your messages easily")](https://github.com/noveogroup-amorgunov/localizify)
+![Like action](https://img.shields.io/github/actions/workflow/status/noveogroup-amorgunov/amorgunov.com/likes.yml?branch=master&style=flat&colorA=000000&colorB=000000)  [![Downloads per month](https://img.shields.io/npm/dm/localizify?style=flat&colorA=000000&colorB=000000)](https://www.npmjs.com/package/localizify) [![Downloads per month](https://img.shields.io/npm/v/localizify?style=flat&colorA=000000&colorB=000000)](https://www.npmjs.com/package/localizify)
 
-[![Travis Build Status](https://flat.badgen.net/travis/noveogroup-amorgunov/localizify)](https://travis-ci.org/noveogroup-amorgunov/localizify) [![Downloads per month](https://flat.badgen.net/npm/dm/localizify)](https://www.npmjs.com/package/localizify) [![Version](https://flat.badgen.net/npm/v/localizify)](https://www.npmjs.com/package/localizify) [![License](https://flat.badgen.net/npm/license/localizify)](https://www.npmjs.com/package/localizify) ![Typed with TypeScript](https://flat.badgen.net/badge/icon/Typed?icon=typescript&label&labelColor=blue&color=555555)
+> Version 3.x.x has BREAK CHANGES (some additional API was changed). See more in [release notes]().
 
-<br/>
-<br/>
-</div>
+*Localizify* is **fully typed**, **zero-dependencies** and **performant library** for translation and localization in *NodeJS* or *browser*.
 
-localizify is very **light and performant library for translation and localization** in `Node.js` and the browser.
+It's a solution which **you want to use** if you like clear API and TypeScript suggestions.
 
-## Goals and features
+## Features
 
-- ❗️ Written on TypeScript
-- :rocket: No dependencies (only 2KB gziped)
-- :dancers: Translation and localization
-- :gift: Interpolation of values to translations
-- :penguin: Detection user language in browser and in server requests
-- :mega: Events when locale was changed or translation isn't found
-- :moyai: Easy scope system (nested-object translations)
-- :slot_machine: A lot of examples
+- Fully (*almost*) TypeScript typed and infering
+- Zero dependencies (**only 2KB** gziped)
+- Translation and localization
+- Interpolation of values to translations
+- Detection user language in browser and in server requests
+- Events system (fire event if locale was changed or translation is not found)
+- Easy nested-object translations
 
 ## Examples
 
-- react: you can use [react-localizify](https://github.com/noveogroup-amorgunov/react-localizify), which provide high order component and hook, or write it yourself by example ([see it in ./docs/usage-with-react](./docs/usage-with-react.md))
-- [./docs/usage-with-express](./docs/usage-with-express.md)
-- [./docs/usage-with-hapijs](./docs/usage-with-hapijs.md)
+See base example in CodeSandbox: [Open in CodeSandbox](TODO) (with JSON keysets: [Open in CodeSandbox](https://codesandbox.io/s/localizify-37rpe))
+
+- Base usage: [examples/base](./examples/react)
+- Usage with React: [examples/react](./examples/react)
+- Usage with Express: [examples/express](./examples/express)
+- Usage with HapiJS: [examples/hapijs](./examples/hapijs)
 
 ## Installation
 
-You can install library from npm:
+You can install library from npm (yarn, pnpm):
 
-```shell
-npm install localizify --save
-# or using yarn
-yarn add localizify
+```bash
+npm i localizify
 ```
 
-or download file (full version or minify bundle) from `dist` folder and add the script to the page (only for browsers):
+or download file (full version or minify bundle) from `dist` folder and add the script to the page (*only for browsers*):
 
 ```html
 <script src="/path/to/localizify.min.js"></script>
 ```
 
-## Usage
+## Usage (quick start guide)
 
-[Open in CodeSandbox](https://codesandbox.io/s/localizify-37rpe).
+Localizify has two general cases how you can work with library:
 
-### Quick start
+- Recommended: Create new instnce by constructor. It open full TypeScript opportunities and provide you max type safe approach.
 
-[localizify](https://github.com/noveogroup-amorgunov/localizify) returns instance of `Localizify`, so it's singelton. You can add translations in one module and use it in another (but you can get `Localizify` from `localizify.Instance`).
+- Use singelton instance of `Localizify`, which exporting with `t` alias. You can add translations in one module and use it in another. But in this mode it's no way infer TypeScript types and you should check the correctness of translations youself. This approach exists only for backward compatibility
 
 First of all you need add locales with translations and set locale by default:
 
-```javascript
-const localizify = require('localizify');
+```ts
+// src/shared/t.ts
 
-const en = require('../messages/en.json');
-const fr = require('../messages/fr.json');
+import { Localizify } from 'localizify'
 
-localizify
-  .add('en', en)
-  .add('fr', fr)
-  .setLocale('en');
-  
-```
-```json
-# en.json
-{
-  "hello world": "Hello world!",
-  "how are you, {name}?": "How are you, {name}?"
-}
-```
-```json
-# fr.json
-{
-  "hello world": "Bonjour tout le monde!",
-  "how are you, {name}?": "Сomment êtes-vous, {name}?"
-}
+export const keysets = {
+    en: {
+        hello: 'Hello, bro! How are you?',
+        say: { awesome: 'You are awesome, {name}' },
+    },
+    ru: {
+        hello: 'Привет, бро! Как сам?',
+        say: { awesome: 'Ты прекрасен, {name}' },
+    },
+} as const
+// 👆 Use `as const` assertion to library can infer types for interpolations
 ```
 
-You can't set unknown locale (without translations):
+```ts
+// Add translations (keysets) in constructor
+const localizify = new Localizify(keysets)
 
-```javascript
-const localizify = require('localizify');
+// Or add by chaining
+const localizify = new Localizify({})
+    .add('en', keyset.en)
+    .add('ru', keyset.ru)
+    .setLocale('en') // en locale in using by default
 
-localizify.setLocale('es');
-localizify.getLocale(); // en, because 'es' is unknown locale
-  
-  
-// to check that it's available locale
-localizify.isLocale('es'); // false
-localizify.isLocale('en'); // true
+const { t } = localizify
+
+export { localizify, t }
 ```
 
-Now for get translation by key you can use `localizify.translate(key)` or `localizify.t(key)` methods:
+That's all. You can use `t` in your code:
 
-```javascript
-const { t } = require('localizify');
+```ts
+// src/any-module.ts
+import { t, localizify } from 'src/shared/t'
 
-t('hello world'); // Hello world!
-t('hello, {username}', { username: 'Alexander Morgunov' }); // hello, Alexander Morgunov
-t('how are you, {name}', { name: 'Sasha' }); // How are you, Sasha?
+t('hello'); // Hello, bro! How are you?
+t('say.awesome', { name: 'uncle Ben' }); // You are awesome, {name}
 
-localizify.setLocale('fr');
+localizify.setLocale('ru')
+// 👆 You can set only known locale
 
-// if we haven't translition, return default message
-t('hello, {username}', { username: 'Alexander Morgunov' });  // hello, Alexander Morgunov
+// if we haven't translition, TypeScript say about it,
+// but if you run code anyway, function return key
+// @ts-expect-error
+t('say.unknown'); // say.unknown
+// ^^^^^^^^^^^^
 
-// if have
-t('hello world'); // Bonjour tout le monde!
-t('how are you, {name}?', { name: 'Sasha' }); // Сomment êtes-vous, Sasha?
+t('hello'); // Привет, бро! Как сам?
+t('say.awesome', { name: 'дядушка Бэн' }); // Ты прекрасен, дядушка Бэн
 ```
 
-If locale don't contain appropriate translation, return source interpolated key (key may be equal message) and emit event.
+## Documentation
 
-### Addition features
+- [Events](./docs/feature-events.md)
+- [Translation's interpolation](./docs/feature-interpolation.md)
+- [Nested object](./docs/feature-nested-object.md)
+- [Set locale](./docs/feature-set-locale.md)
+- [Translate function](./docs/feature-translate.md)
+- [Detect locale](./docs/feature-detect.md)
 
-#### Translation as nested object
+## Roadmap
 
-Translation data is organized as a nested object using the top-level key as namespace (scope or context):
+- [ ] Add pluralization system
+- [ ] Fix TypeScript errors in types (remove all any)
+- [ ] Create monorepo with packages for frameworks (e.g. *React*)
+- [ ] Comparations with other libraries
+- [ ] Add examples
 
-```json
-{
-  "bot" : {
-    "startagain": "reset system",
-    "turn_off": "Bot was turned off by {name}.",
-    "turn_on": "Bot was turn on!",
-    "statuses": {
-      "active": "Active",
-      "remote": "Remote"
-    }
-  },
-  "web": {
-    "go_to_messenger": "Go to messenger",
-    "sign_up": "Registration"
-  }
-}
-```
+## Troubleshoots
 
-The key argument can be a dot-separated key. See examples below:
+- TypeScript infering types is not working if you store keysets in json files (see issue: https://github.com/microsoft/TypeScript/issues/32063)
 
-```javascript
-t('bot.turn_off', { name: 'Alex' }); // Bot was turned off by Alex.
-t('bot.statuses.active'); // Active
+## License
 
-t('web.sign_up'); // Registration
-```
-
-The `scope` (namespace) option can be either a single key or a dot-separated key. You can combinate keys and scopes as you wish:
-
-```javascript
-t('turn_off', { name: 'Alex', scope: 'bot' }); // Bot was turned off by Alex.
-
-t('statuses.active', { scope: 'bot' }); // Active
-t('active', { scope: 'bot.statuses' }); // Active
-```
-
-#### Available events
-
-When translation is missing, *localizify* emit an event about it. You can listen it:
-
-```javascript
-localizify.onTranslationNotFound((locale, key, scope) => {});
-```
-
-The `setLocale` method emits an event you can listen to:
-
-```javascript
-localizify.onLocaleChange((locale, previous) => {});
-```
-
-#### Register default scope and interpolations
-
-You can set scope for your module by default:
-
-```javascript
-localizify.setDefaultScope('web');
-
-t('go_to_messenger'); // Go to messenger
-t('sign_up'); // Registration
-
-localizify.clearDefaultScope(); // clear default scope
-```
-You can add translations for certain scope:
-
-```javascript
-localizify.add('en', 'bot', { 'hello': "hello, bot" });
-```
-
----
-
-You can register default interpolations using the `registerInterpolations` method. Interpolations you give as options to the translate method take precedence over registered interpolations.
-
-```javascript
-localizify.add('en', {
-  my_awesome_namespace: {
-    greeting: 'Hello {name} in {app_name}!'
-  }
-});
-
-localizify.registerInterpolations({ app_name: 'My Awesome App' });
-
-t('my_awesome_namespace.greeting', { name: 'Alex' }); // Hello Alex in My Awesome App!
-t('my_awesome_namespace.greeting', { name: 'Alex', app_name: 'The Bar App' }); // Hello Alex in The Bar App!
-```
-
-## API
-
-See library API in [index.d.ts](./index.d.ts).
+Licensed under the MIT license.

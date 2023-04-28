@@ -1,4 +1,4 @@
-export type Callback = (...args: Array<unknown>) => void;
+export type Callback = (...args: Array<any>) => void;
 
 type Event = string;
 

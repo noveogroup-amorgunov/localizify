@@ -1,0 +1,7 @@
+{
+  "hello": "Hello, bro! How are you?",
+  "say": {
+      "awesome": "You are awesome, {name}",
+      "notBad": "You are not bad"
+  }
+}

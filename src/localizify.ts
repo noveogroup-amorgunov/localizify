@@ -1,121 +1,226 @@
 import { normalize, isBrowser } from './utils';
-import { Callback, EventEmitter } from './event-emitter';
+import { EventEmitter } from './event-emitter';
 
-export enum EventTypes {
-    ChangeLocale = 'CHANGE_LOCALE',
-    TranslationNotFound = 'TRANSLATION_NOT_FOUND',
-    ReplacedDataNotFound = 'REPLACED_DATA_NOT_FOUND',
+const EVENTS = {
+    ChangeLocale: 'CHANGE_LOCALE',
+    TranslationNotFound: 'TRANSLATION_NOT_FOUND',
+    ReplacedDataNotFound: 'REPLACED_DATA_NOT_FOUND',
+} as const
+
+type KeyObject = Record<string, string | number | boolean | null> 
+
+type Keyset<T = any> = Record<string | number | symbol, T>;
+
+type KeysetMap<K extends string | number | symbol = string> = Record<K, Keyset>;
+
+type Params<S, O = {}> = S extends `${string}{${infer P}}${infer R}` ? Params<R, O & { [K in P]?: string | number }> : O
+
+type GetPath<L, K> = K extends `${infer P}.${infer R}`
+    ? P extends keyof L
+        ? GetPath<L[P], R>
+        : never
+    : K extends keyof L
+        ? L[K]
+        : never;
+
+type NormaizedKeyset<L extends Keyset> = keyof {
+    [K in keyof L as L[K] extends string
+        ? K
+        : L[K] extends Keyset
+        ? `${K & string}.${NormaizedKeyset<L[K]> & string}`
+        : never]: any
 }
 
-type Translation = Record<string, string>;
+class Localizify<L = {}> {
+    /**
+     * Current locale (return union type of possible locales)
+     * 
+     * @example
+     * this.locale = 'en | 'ru'
+     */
+    private locale: keyof L = 'en' as keyof L;
 
-type Store = {
-    locale: string;
-    localesList: string[];
-    separator: string;
-    scope: string | null;
-    translations: Record<string, Translation>;
-    interpolations: Translation;
-    normalizedKeys: Record<string, Translation>;
-};
+    /**
+     * List of locales as tuple
+     * 
+     * @deprecated Will be remove in future versions
+     * @example
+     * this.localesList = ['en, 'ru']
+     */
+    private localesList: string[] = ['en'];
 
-export class Localizify extends EventEmitter {
-    private store: Store = {
-        locale: 'en',
-        localesList: ['en'],
-        scope: null,
-        translations: {},
-        interpolations: {},
-        normalizedKeys: {},
-        separator: '.',
-    };
+    /**
+     * Keysets map
+     * 
+     * @example
+     * this.keysets = {
+     *   en: {
+     *     hello: 'Hello, bro! How are you?',
+     *     say: {
+     *       awesome: 'You are awesome, {name}'
+     *     }
+     *   },
+     *   ru: {
+     *     hello: 'Привет, бро! Как сам?',
+     *     say: {
+     *       awesome: 'Ты прекрасен, {name}'
+     *     }
+     *   },
+     * }
+     */
+    private keysets: KeysetMap<keyof L> = {} as KeysetMap<keyof L>;
 
-    getStore() {
-        return this.store;
+    // TODO: I cant write types for infer normalized keysets
+    /**
+     * Normalized keysets map
+     * 
+     * @example
+     * this.normalizedKeysets = {
+     *   en: {
+     *     hello: 'Hello, bro! How are you?',
+     *     say.awesome: 'You are awesome, {name}'
+     *   },
+     *   ru: {
+     *     hello: 'Привет, бро! Как сам?',
+     *     say.awesome: 'Ты прекрасен, {name}',
+     *   },
+     * }
+     */
+    private normalizedKeysets: any = {}
+
+    // TODO: use in translations
+    /**
+     * Global interpolations
+     * 
+     * @example
+     * this.interpolations = {
+     *   appName: 'LOCALIZIFY',
+     *   // ...
+     * }
+     */
+    private interpolations: KeyObject
+
+    private eventEmitter: EventEmitter
+
+    constructor(keysets: KeysetMap = {}, interpolations: KeyObject = {}) {
+        Object.entries(keysets).forEach(([key, v]: [string, Keyset]) => {
+            this.add(key, v);
+        });
+
+        this.translate = this.translate.bind(this)
+
+        this.interpolations = interpolations
+
+        this.eventEmitter = new EventEmitter()
+
+        return this;
+    }
+
+    add<K extends string, V extends Keyset>(
+        locale: K,
+        keyset: V,
+    ): TypedLocalizify<L & { [P in K]: V }> {
+        if (!this.localesList.includes(locale)) {
+            this.localesList.push(locale);
+        }
+
+        // Use cast coz in current moment type K is not assignable to type keyof L
+        const typedLocale = locale as unknown as keyof L
+
+        // Set first added locale as default
+        if (!this.locale) {
+            // Use cast coz in current moment type K is not assignable to type keyof L
+            this.locale = typedLocale
+        }
+
+        this.keysets[typedLocale] = keyset;
+
+        // as unknown as NormaizedKeyset<L & { [P in K]: V }>;
+        this.normalizedKeysets[typedLocale] = normalize(keyset); 
+
+        return this as TypedLocalizify<L & { [P in K]: V }>;
     }
 
     getLocale() {
-        return this.getStore().locale;
-    }
-
-    setLocale(locale: string) {
-        const { locale: previous } = this.getStore();
-
-        if (this.isLocale(locale) && previous !== locale) {
-            this.getStore().locale = locale;
-            this.emit(EventTypes.ChangeLocale, locale, previous);
-        }
-
-        return this;
-    }
-
-    isLocale(locale: string) {
-        return this.getStore().localesList.indexOf(locale) !== -1;
-    }
-
-    onLocaleChange(callback: Callback) {
-        this.on(EventTypes.ChangeLocale, callback);
-
-        return callback;
-    }
-
-    onTranslationNotFound(callback: Callback) {
-        this.on(EventTypes.TranslationNotFound, callback);
-    }
-
-    onReplacedDataNotFound(callback: Callback) {
-        this.on(EventTypes.ReplacedDataNotFound, callback);
-    }
-
-    setDefaultScope(scope: string) {
-        this.getStore().scope = scope;
-
-        return this;
-    }
-
-    clearDefaultScope() {
-        this.getStore().scope = null;
-
-        return this;
-    }
-
-    registerInterpolations(translation: Translation) {
-        Object.assign(this.getStore().interpolations, translation);
-
-        return this;
+        return this.locale;
     }
 
     /**
-     * Register new locale
+     * @deprecated Will be remove in future versions
      */
-    add(
-        locale: string,
-        scopeOrTranslations: string | Translation,
-        _translations?: Translation,
-    ) {
-        const store = this.getStore();
-        let trans:
-            | Record<string, Translation>
-            | Translation
-            | string = scopeOrTranslations;
+    getLocalesList() {
+        return this.localesList;
+    }
 
-        if (_translations) {
-            trans = {};
-            trans[scopeOrTranslations as string] = _translations;
+    setLocale(nextLocale: keyof L) {
+        const prevLocale = this.locale
+
+        if (this.isLocale(nextLocale) && this.locale !== nextLocale) {
+            this.locale = nextLocale;
+            this.eventEmitter.emit(EVENTS.ChangeLocale, nextLocale, prevLocale);
         }
 
-        if (!this.isLocale(locale)) {
-            store.localesList.push(locale);
+        return this;
+    }
+
+    isLocale(locale: unknown): locale is keyof L {
+        return typeof locale === 'string' && locale in this.keysets
+    }
+
+    translate<
+        // @ts-expect-error Type 'L[keyof L]' does not satisfy the constraint 'Keyset<any>'
+        K extends NormaizedKeyset<L[keyof L]>,
+        P extends Params<GetPath<L[keyof L], K>>,
+    >(key: K, params: P = {} as any) {
+        if (!key) {
+            throw new Error('`key` argument is required');
         }
 
-        store.translations[locale] = {
-            ...store.translations[locale],
-            ...(trans as Translation),
-        };
-        store.normalizedKeys[locale] = {
-            ...store.normalizedKeys[locale],
-            ...(normalize(trans) as Translation),
-        };
+        const locale = this.locale
+
+        const hasTranslation = key in this.normalizedKeysets[locale]
+
+        if (!hasTranslation) {
+            this.eventEmitter.emit(EVENTS.TranslationNotFound, locale, key);
+        }
+
+        return this.interpolateTranslation(
+            hasTranslation ? this.normalizedKeysets[this.locale][key] : key,
+            // Argument of type '{} | { [x: string]: string | number | undefined; }'
+            // is not assignable to parameter of type 'KeyObject'.
+            // @ts-expect-error 🤯🤯🤯
+            params
+        )
+    }
+
+    private interpolateTranslation(translation: string, params: KeyObject) {
+        const terms = translation.match(/\{([a-zA-Z0-9_-]+)\}/gi) || [];
+
+        terms.forEach(term => {
+            const parsedTerm = term.replace(/[{}]/gi, '');
+
+            const replacedTextCases = [
+                params[parsedTerm],
+                this.interpolations[parsedTerm],
+                term,
+            ];
+
+            const replaceTo = replacedTextCases.find(
+                value => typeof value !== 'undefined',
+            );
+
+            if (replaceTo === term) {
+                this.eventEmitter.emit(EVENTS.ReplacedDataNotFound, translation, term, params);
+            }
+
+            translation = translation.replace(term, replaceTo as string);
+        });
+
+        return translation;
+    }
+
+    registerInterpolations(interpolations: KeyObject) {
+        Object.assign(this.interpolations, interpolations);
 
         return this;
     }
@@ -123,13 +228,16 @@ export class Localizify extends EventEmitter {
     /**
      * Define user's language by browser or by request header language
      */
-    detectLocale(_language?: string) {
-        let language = _language;
+    detectLocale(defaultLanguage?: string): keyof L | false {
+        let language = defaultLanguage;
 
         if (isBrowser() && !language) {
-            // Different browsers have the user locale defined
-            // on different fields on the `navigator` object, so we make sure to account
-            // for these different by checking all of them
+            /**
+             * Different browsers have the user locale defined
+             * on different fields on the `navigator` object,
+             * so we make sure to account for these different
+             * by checking all of them
+             */
             language =
                 (navigator.languages && navigator.languages[0]) ||
                 navigator.language ||
@@ -150,62 +258,127 @@ export class Localizify extends EventEmitter {
             : false;
     }
 
-    private replaceData(_msg: string, data: Record<string, unknown> | null) {
-        let msg = _msg;
-        const terms = msg.match(/\{(.*?)\}/gi) || [];
+    onLocaleChange(callback: (nextLocale: keyof L, prevLocale: keyof L) => void) {
+        this.eventEmitter.on(EVENTS.ChangeLocale, callback);
 
-        terms.forEach(_term => {
-            const term = _term.replace(/[{}]/gi, '');
-
-            const replacedTextCases = [
-                data[term],
-                this.getStore().interpolations[term],
-                _term,
-            ];
-            const replaceTo = replacedTextCases.find(
-                value => typeof value !== 'undefined',
-            );
-
-            if (replaceTo === _term) {
-                this.emit(EventTypes.ReplacedDataNotFound, _msg, _term, data);
-            }
-
-            msg = msg.replace(_term, replaceTo as string);
-        });
-
-        return msg;
+        return callback;
     }
 
-    translate(key: string, data: Record<string, string> = {}) {
-        if (!key) {
-            throw new Error('"key" param is required');
-        }
+    onTranslationNotFound(callback: (locale: string, key: string) => void) {
+        this.eventEmitter.on(EVENTS.TranslationNotFound, callback);
+    }
 
-        const { locale: l, scope = this.getStore().scope } = data;
-        const locale = (this.isLocale(l) && l) || this.getStore().locale;
-
-        if (!locale) {
-            throw new Error('Current locale is not defined');
-        }
-
-        const keys = this.getStore().normalizedKeys[locale];
-        const normalizeKey = (scope ? `${scope}.` : '') + key;
-
-        const hasTranslation = keys && keys[normalizeKey];
-
-        if (!hasTranslation) {
-            this.emit(EventTypes.TranslationNotFound, locale, key, scope);
-        }
-
-        return this.replaceData(
-            hasTranslation ? keys[normalizeKey] : key,
-            data,
-        );
+    onReplacedDataNotFound(callback: (translation: string, term: string, data: KeyObject) => void) {
+        this.eventEmitter.on(EVENTS.ReplacedDataNotFound, callback);
     }
 }
 
-const localizify = new Localizify();
-const t = localizify.translate.bind(localizify);
+/**
+ * Monkey patch class constructor to infer right TypeScript types
+ */
+interface TypedLocalizify<L> extends Localizify<L> {}
 
-export { t, Localizify as Instance };
+interface TypedLocalizifyConstructor<L = {}> {
+    new <LNext extends KeysetMap>(l?: LNext, interpolations?: KeyObject): TypedLocalizify<
+        L & { [K in keyof LNext]: LNext[K] }
+    >;
+}
+
+const TypedLocalizify: TypedLocalizifyConstructor = Localizify;
+
+const localizify = new TypedLocalizify({});
+const t = localizify.translate;
+
+export {
+    /**
+     * Typed class for base usage
+     */
+    TypedLocalizify as Localizify,
+
+    /**
+     * Singelton functions (not recommend to use, coz lose typescript)
+     */
+    t,
+    localizify,
+
+    /**
+     * @deprecated Will be remove in future versions
+     */
+    TypedLocalizify as Instance
+};
+
+// For backward compatibility export default instance
 export default localizify;
+
+
+//////////
+
+// ---
+
+// const inc = new Localizify();
+// const res2 = inc.add('ru', {}).add('en', {});
+
+// const res3 = res2.getLocales();
+// //     ^?
+
+// const res = inc.getLocales();
+//     ^?
+
+
+/*
+const inc2 = new TypedLocalizify({
+    en: { hello: 'hey, {name}', how: { are_you: 'How are you?'} },
+    fr: { hello: 'bonjour, {name}', how: { are_you: 'Jopa shmel?'} },
+} as const);
+
+let clang = inc2.getLocale();
+//   ^?
+
+let inc3 = inc2.add('ru', { hello: 'йоу, {name}', how: { are_you: 'Как сам?'} } as const);
+//   ^?
+
+let clang2 = inc3.getLocale();
+//   ^?
+
+inc3.getLocales();
+//     ^?
+// inc2.getLocales().en
+
+let res7 = inc3.getLocalesList();
+//   ^?
+
+let res5 = inc2.getLocales();
+//   ^?
+
+// inc2.translate('how.are_you')
+
+inc3.setLocale('ru')
+
+const a = inc3.locale
+//    ^?
+
+console.log(inc3.translate('how.are_you'));
+
+inc3.translate('hello', {name: 123, locale: 'en'})
+
+// @ts-expect-error
+console.log(inc3.translate('how.are_you', {foo:true}));
+
+// @ts-expect-error
+inc3.translate('hello', 55)
+// @ts-expect-error
+inc3.translate('hello', {foo: 'bar'})
+
+
+inc3.translate('hello', {name: 5})
+inc3.translate('hello', {})
+console.log(inc3.translate('hello', {name:'dick'}))
+
+
+// inc3.translate('')
+
+console.log(res7, res5);
+
+inc3.setLocale('ru')
+// inc3.translate('how.are_you', {})
+*/
